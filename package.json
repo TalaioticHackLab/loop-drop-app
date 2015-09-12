@@ -27,6 +27,7 @@
     "audio-slot": "~4.3.1",
     "audio-slot-param": "~1.0.3",
     "audio-timeline": "~1.1.1",
+    "beefy": "~2.1.5",
     "bopper": "~2.9.2",
     "bplist-parser": "^0.1.0",
     "brace": "~0.5.0",
@@ -64,12 +65,13 @@
     "tap-tempo": "~0.0.0",
     "teoria": "~0.4.0",
     "throttle-observ": "^1.1.0",
-    "through": "^2.3.4",
+    "through": "~2.3.8",
     "value-event": "~5.1.0",
     "virtual-dom": "~2.1.1",
     "wav": "^1.0.0",
     "wave-recorder": "~2.2.1",
     "web-midi": "~1.0.1",
+    "websocket-stream": "~2.0.2",
     "xtend": "^4.0.0"
   },
   "devDependencies": {
