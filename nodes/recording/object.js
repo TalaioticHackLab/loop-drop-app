@@ -12,10 +12,9 @@ var getClosestPoint = require('lib/get-closest-point')
 var extend = require('xtend')
 var animateProp = require('animate-prop')
 
-module.exports = Recording 
+module.exports = Recording
 
 function Recording (parentContext) {
-
   var context = Object.create(parentContext)
 
   var obs = Struct({
@@ -74,16 +73,15 @@ function Recording (parentContext) {
     rendering: obs.rendering
   })
 
-
   obs.destroy = obs.timeline.destroy
 
   obs.splice = function (snapToCue) {
     var info = getPositionInfo(obs.position())
     if (info) {
-      var pos = snapToCue ? 
+      var pos = snapToCue ?
         getClosestPoint(info.clip.cuePoints(), info.clip.startOffset() + info.clipOffset) - info.clip.startOffset() :
         info.clipOffset
-      
+
       if (pos > 0 && pos < info.clip.duration()) {
         var newClip = extend(info.clip(), {
           startOffset: info.clip.startOffset() + pos,
@@ -106,7 +104,7 @@ function Recording (parentContext) {
       if (markers) {
         for (var i = 0; i < markers.length; i++) {
           if (markers[i] >= time) {
-            var marker = (markers[i] === time) ? markers[i+1] : markers[i]
+            var marker = (markers[i] === time) ? markers[i + 1] : markers[i]
             if (marker != null) {
               var offset = marker - time
               obs.position.set(pos + offset)
@@ -133,7 +131,6 @@ function Recording (parentContext) {
     })
   }
 
-
   obs.ensureCursorVisible = function (animate) {
     var timeline = document.querySelector('.ArrangementTimeline')
     if (timeline) {
@@ -154,7 +151,7 @@ function Recording (parentContext) {
       if (markers) {
         for (var i = 0; i < markers.length; i++) {
           if (markers[i] >= time) {
-            var marker = (markers[i] === time) ? markers[i-2] : markers[i-1]
+            var marker = (markers[i] === time) ? markers[i - 2] : markers[i - 1]
             if (marker != null) {
               var offset = marker - time
               obs.position.set(pos + offset)
@@ -196,12 +193,12 @@ function Recording (parentContext) {
       }
     })
   }
-  
+
   return obs
 
   // scoped
 
-  function getPositionInfo(pos) {
+  function getPositionInfo (pos) {
     var current = 0
     for (var i = 0; i < obs.timeline.primary.getLength(); i++) {
       var clip = obs.timeline.primary.get(i)
@@ -209,7 +206,7 @@ function Recording (parentContext) {
       if (pos >= current && pos < endTime) {
         return {
           clipIndex: i,
-          clip: clip, 
+          clip: clip,
           clipOffset: pos - current
         }
       }
@@ -219,7 +216,7 @@ function Recording (parentContext) {
 
   function start () {
     releasePositionIncrement && releasePositionIncrement()
-    obs.timeline.start(context.audio.currentTime+0.1, obs.position())
+    obs.timeline.start(context.audio.currentTime + 0.1, obs.position())
   }
 
   function stop () {

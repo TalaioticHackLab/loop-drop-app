@@ -25,7 +25,7 @@ function LaunchControl (context) {
   port.on('error', function (err) {
     // can't connect
   })
-  
+
   var onTrigger = AnyTrigger(project.items)
 
   // FIRST ROW OF KNOBS:
@@ -40,14 +40,13 @@ function LaunchControl (context) {
     param8: '184/28'
   })
 
-  watchThrottle(knobs.tempo, 20, function(value) {
+  watchThrottle(knobs.tempo, 20, function (value) {
     if (value != null) {
-      project.tempo.set(value+60)
+      project.tempo.set(value + 60)
     }
   })
 
-
-  watchThrottle(knobs.swing, 20, function(value) {
+  watchThrottle(knobs.swing, 20, function (value) {
     if (value != null) {
       project.swing.set(value / 128)
     }
@@ -62,16 +61,14 @@ function LaunchControl (context) {
     MidiParam(context, 'Launch Control > 8', throttle(knobs.param8)),
   ]
 
-  params.forEach(function(param) {
+  params.forEach(function (param) {
     context.paramLookup.put(param.id(), param)
   })
-  //////
-
-
+  // ////
 
   // SECOND ROW OF KNOBS:
   var volumes = ObservMidi(port, [
-    '184/41', 
+    '184/41',
     '184/42',
     '184/43',
     '184/44',
@@ -84,18 +81,16 @@ function LaunchControl (context) {
     values.forEach(function (val, i) {
       var item = project.items.get(i)
       if (item && item.node.output) {
-
         if (val == null) {
           val = 64
         }
 
         item.node.output.gain.value = (val / 64)
       }
-      
+
     })
   })
-  ////////
-
+  // //////
 
   // CONTROL BUTTONS:
   var offset = Observ(0)
@@ -113,7 +108,7 @@ function LaunchControl (context) {
 
   controlButtons.tap(function (value) {
     if (value) {
-      controlButtons.tap.flash(light(0,2))
+      controlButtons.tap.flash(light(0, 2))
       project.actions.tapTempo()
     }
   })
@@ -157,14 +152,13 @@ function LaunchControl (context) {
       lastSuppress = null
     }
   })
-  ///
-
+  // /
 
   // SELECT BUTTONS:
   var selectedButton = null
-  var buttonBase = computed([offset, project.items, project.selected], function(offset, items, selected) {
+  var buttonBase = computed([offset, project.items, project.selected], function (offset, items, selected) {
     var result = []
-    for (var i=0;i<8;i++) {
+    for (var i = 0;i < 8;i++) {
       var item = project.items.get(i)
       if (item) {
         if (item.path === selected) {
@@ -181,8 +175,7 @@ function LaunchControl (context) {
   })
 
   var buttonFlash = FlashArray()
-  onTrigger(function(i) {
-
+  onTrigger(function (i) {
     if (i === selectedButton) {
       buttonFlash.flash(i, light(3, 3), 40)
     } else {
@@ -200,15 +193,14 @@ function LaunchControl (context) {
     '152/26',
     '152/27',
   ], ArrayStack([
-    buttonBase, 
+    buttonBase,
     buttonFlash
   ]))
-
 
   buttons(function (values) {
     var result = null
 
-    values.forEach(function(val, i) {
+    values.forEach(function (val, i) {
       if (val) {
         result = i
       }
@@ -224,7 +216,7 @@ function LaunchControl (context) {
 
   obs.destroy = function () {
     port.close()
-    params.forEach(function(param) {
+    params.forEach(function (param) {
       context.paramLookup.delete(param.id())
     })
   }
@@ -265,7 +257,7 @@ function invoke (fn) {
   fn()
 }
 
-function light(r, g, flag){
+function light (r, g, flag) {
   if (!r || r < 0)  r = 0
   if (r > 3)        r = 3
   if (!g || g < 0)  g = 0
@@ -277,6 +269,6 @@ function light(r, g, flag){
   } else {
     flag = 12
   }
-  
+
   return ((16 * g) + r) + flag
 }

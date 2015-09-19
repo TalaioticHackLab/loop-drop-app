@@ -27,8 +27,8 @@ module.exports = function renderSample (node) {
 
       SampleChooser(node),
 
-      Select(node.mode, { 
-        options: modeChoices 
+      Select(node.mode, {
+        options: modeChoices
       }),
 
       ModRange(node.amp, {
@@ -59,9 +59,9 @@ module.exports = function renderSample (node) {
   ])
 }
 
-function getSampleName(data){
+function getSampleName (data) {
   var src = data && data.src
-  if (typeof src === 'string'){
+  if (typeof src === 'string') {
     return src.replace(/^\.\//, '')
   }
 }

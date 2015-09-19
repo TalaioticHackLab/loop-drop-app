@@ -10,16 +10,15 @@ var Transform = require('audio-slot-param/transform')
 
 module.exports = ModulatorChunk
 
-function ModulatorChunk(parentContext){
-
+function ModulatorChunk (parentContext) {
   var context = Object.create(parentContext)
 
   var obs = ObservStruct({
     id: Observ(),
     slots: NodeArray(context),
     minimised: Property(false),
-    shape: Property([1,4]),
-    color: Property([0,0,0]),
+    shape: Property([1, 4]),
+    color: Property([0, 0, 0]),
     flags: Property([])
   })
 
@@ -31,23 +30,22 @@ function ModulatorChunk(parentContext){
   context.slotLookup = lookup(obs.slots, 'id')
 
   var broadcastSchedule = null
-  obs.onSchedule = Event(function(b){
+  obs.onSchedule = Event(function (b) {
     broadcastSchedule = b
   })
 
   var currentTransform = null
 
-  obs.slots.onUpdate(function(){
-
-    if (currentTransform){
+  obs.slots.onUpdate(function () {
+    if (currentTransform) {
       currentTransform.destroy()
       currentTransform = null
     }
 
     var transforms = [0]
 
-    obs.slots.forEach(function(slot){
-      if (slot.onSchedule){
+    obs.slots.forEach(function (slot) {
+      if (slot.onSchedule) {
         transforms.push({param: slot, transform: operation})
       }
     })
@@ -57,10 +55,10 @@ function ModulatorChunk(parentContext){
 
   })
 
-  obs.triggers = computed([obs.id, obs.shape], function(id, shape){
+  obs.triggers = computed([obs.id, obs.shape], function (id, shape) {
     var length = shape[0] * shape[1]
     var result = []
-    for (var i=0;i<length;i++){
+    for (var i = 0;i < length;i++) {
       result.push(String(i))
     }
     return result
@@ -68,28 +66,28 @@ function ModulatorChunk(parentContext){
 
   obs.grid = computed([obs.triggers, obs.shape], ArrayGrid)
 
-  obs.triggerOn = function(id, at){
+  obs.triggerOn = function (id, at) {
     var slot = context.slotLookup.get(id)
-    if (slot){
+    if (slot) {
       slot.triggerOn(at)
     }
   }
 
-  obs.triggerOff = function(id, at){
+  obs.triggerOff = function (id, at) {
     var slot = context.slotLookup.get(id)
-    if (slot){
+    if (slot) {
       slot.triggerOff(at)
     }
   }
 
-  obs.destroy = function(){
-    if (currentTransform){
+  obs.destroy = function () {
+    if (currentTransform) {
       currentTransform.destroy()
       currentTransform = null
     }
   }
 
-  obs.resolvedGrid = computed([obs.triggers, obs.shape], function(triggers, shape){
+  obs.resolvedGrid = computed([obs.triggers, obs.shape], function (triggers, shape) {
     return ArrayGrid(triggers.map(getGlobalId), shape)
   })
 
@@ -97,12 +95,12 @@ function ModulatorChunk(parentContext){
 
   // scoped
 
-  function operation(base, value){
-    return (parseFloat(base)||0) + (parseFloat(value)||0)
+  function operation (base, value) {
+    return (parseFloat(base) || 0) + (parseFloat(value) || 0)
   }
 
-  function getGlobalId(id){
-    if (id){
+  function getGlobalId (id) {
+    if (id) {
       return obs.id() + '/' + id
     }
   }

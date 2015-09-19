@@ -19,7 +19,7 @@ module.exports = {
         release: 0.5
       },
       filter: {
-        type: "lowpass",
+        type: 'lowpass',
         frequency: 5400,
         Q: 1
       }

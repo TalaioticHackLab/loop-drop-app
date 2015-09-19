@@ -13,13 +13,13 @@ var rawEditor = require('./editor/raw.js')
 
 module.exports = TabbedEditor
 
-function TabbedEditor(project){
+function TabbedEditor (project) {
   var data = project()
   var fileObject = getItem(project)
 
   var editor = (data.rawMode && fileObject) ?
     rawEditor(fileObject) :
-    fileObject ? 
+    fileObject ?
       renderEditor(fileObject) :
       renderHelper()
 
@@ -38,7 +38,7 @@ function TabbedEditor(project){
         ['150%', 1.5]
       ]
     })
-  ]) 
+  ])
 
   return h('TabbedEditor', [
     h('header', [project.items._list.map(renderTab, project), controls]),
@@ -46,18 +46,18 @@ function TabbedEditor(project){
   ])
 }
 
-function renderTab(item){
+function renderTab (item) {
   var project = this
   var actions = project.actions
 
-  var data = item&&item()
-  if (data){
+  var data = item && item()
+  if (data) {
     var selected = project.selected() == item.path
-    return h('div.tab', { 
+    return h('div.tab', {
       'ev-click': send(project.selected.set, item.path),
       'className': selected ? '-selected' : null
     }, [
-      h('span', [getName(item.path)]), 
+      h('span', [getName(item.path)]),
       h('button.close', {'ev-click': send(actions.closeFile, item.path)})
     ])
   } else {
@@ -65,9 +65,9 @@ function renderTab(item){
   }
 }
 
-function getName(path){
+function getName (path) {
   var base = getBaseName(path, '.json')
-  if (base === 'index'){
+  if (base === 'index') {
     return getBaseName(getDirectory(path))
   } else {
     var dir = getBaseName(getDirectory(path))
@@ -75,7 +75,7 @@ function getName(path){
   }
 }
 
-function renderHelper(){
+function renderHelper () {
   return h('div CenterTab', [
     h('div Helper', [
       h('a', {href: 'http://loopjs.com/'}, [
@@ -88,11 +88,11 @@ function renderHelper(){
   ])
 }
 
-function getItem(state){
+function getItem (state) {
   var result = null
   var path = state.selected()
-  state.items.some(function(item){
-    if (item.path === path){
+  state.items.some(function (item) {
+    if (item.path === path) {
       result = item
       return true
     }

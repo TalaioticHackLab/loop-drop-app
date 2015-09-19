@@ -16,10 +16,10 @@ module.exports = function renderModulatorChunk (node) {
   var shape = node.shape()
   var length = shape[0] * shape[1]
 
-  for (var i=0;i<length;i++) {
+  for (var i = 0;i < length;i++) {
     var id = String(i)
     var slot = slotLookup.get(id)
-    if (slot){
+    if (slot) {
       elements.push(h('div.slot -trigger', [
         h('strong', id + ': '),
         ModRange(slot.value, { flex: true, format: 'offset', defaultValue: 0 }),
@@ -51,7 +51,7 @@ module.exports = function renderModulatorChunk (node) {
   })
 }
 
-function shapeParams(param){
+function shapeParams (param) {
   return [
     h('div -block -flexSmall', [
       h('div', Range(IndexParam(param, 0), {
@@ -71,7 +71,7 @@ function shapeParams(param){
   ]
 }
 
-function spawnSlot(ev){
+function spawnSlot (ev) {
   var id = ev.id
   var collection = ev.collection
   collection.push({
@@ -81,13 +81,13 @@ function spawnSlot(ev){
   })
 }
 
-function toggleParam(param){
+function toggleParam (param) {
   param.set(!param())
 }
 
-function color(rgb, a){
-  if (!Array.isArray(rgb)){
-    rgb = [100,100,100]
+function color (rgb, a) {
+  if (!Array.isArray(rgb)) {
+    rgb = [100, 100, 100]
   }
-  return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
+  return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'
 }

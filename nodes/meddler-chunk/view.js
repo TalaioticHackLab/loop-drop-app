@@ -14,7 +14,7 @@ var SlotChooser = require('../triggers-chunk/slot-chooser')
 
 module.exports = renderTriggersChunk
 
-function renderTriggersChunk(chunk){
+function renderTriggersChunk (chunk) {
   return h('ChunkNode', [
     h('div.options', [
       h('h1', 'Meddler Slots'),
@@ -30,23 +30,23 @@ function renderTriggersChunk(chunk){
   ])
 }
 
-function renderScaleChooser(node){
+function renderScaleChooser (node) {
   return h('ParamList -compact', [
     ScaleChooser(QueryParam(node.scale, 'notes', {})),
     Range(QueryParam(node.scale, 'offset', {}), {
-      title: 'offset', 
-      format: 'semitone', 
-      defaultValue: 0, 
-      width: 200, 
+      title: 'offset',
+      format: 'semitone',
+      defaultValue: 0,
+      width: 200,
       flex: true
     })
   ])
 }
 
-function shapeParams(param){
+function shapeParams (param) {
   return [
     h('div -block -flexSmall', [
-      h('div', Range(IndexParam(param, 0), { 
+      h('div', Range(IndexParam(param, 0), {
         title: 'rows',
         format: 'bit',
         defaultValue: 1
@@ -54,7 +54,7 @@ function shapeParams(param){
     ]),
 
     h('div -block -flexSmall', [
-      h('div', Range(IndexParam(param, 1), { 
+      h('div', Range(IndexParam(param, 1), {
         title: 'cols',
         format: 'bit',
         defaultValue: 1
@@ -63,16 +63,16 @@ function shapeParams(param){
   ]
 }
 
-function currentSlotEditor(chunk){
+function currentSlotEditor (chunk) {
   var slotId = chunk.selectedSlotId()
   var slots = chunk.context.slotLookup
   var slot = slots.get(slotId)
-  if (slot){
+  if (slot) {
     return renderNode(slot)
   }
 }
 
-function spawnSlot(ev){
+function spawnSlot (ev) {
   var id = ev.id
   var chunk = ev.chunk
 

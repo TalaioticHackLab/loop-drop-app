@@ -1,7 +1,7 @@
 var h = require('lib/h')
 var ModRange = require('lib/params/mod-range')
 
-module.exports = function eqParams(node) {
+module.exports = function eqParams (node) {
   return h('ParamList', [
     ModRange(node.low, {
       title: 'low',

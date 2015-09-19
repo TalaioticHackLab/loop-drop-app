@@ -47,10 +47,10 @@ function SynthChunk (parentContext) {
 
   var scale = Property({
     offset: 0,
-    notes: [0,2,4,5,7,9,11]
+    notes: [0, 2, 4, 5, 7, 9, 11]
   })
 
-  if (context.globalScale){
+  if (context.globalScale) {
     var releaseGlobalScale = watch(context.globalScale, scale.set)
   }
 
@@ -101,10 +101,9 @@ function SynthChunk (parentContext) {
         } else {
           sources.push(extend(osc3,
             {node: 'source/oscillator'
-          }))
+            }))
         }
       }
-
 
       result.push({
         node: 'slot',
@@ -121,16 +120,16 @@ function SynthChunk (parentContext) {
 
   computedSlots(slots.set)
 
-  //throttleWatch(computedSlots, 50, function (value) {
+  // throttleWatch(computedSlots, 50, function (value) {
   //  slots.set(value)
-//
+  //
   //  // HACK: bump shape to trigger update of slot mapping
   //  obs.shape.set(obs.shape())
-  //})
+  // })
 
   slots.onUpdate(obs.routes.reconnect)
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     obs.routes.destroy()
     releaseGlobalScale && releaseGlobalScale()
     releaseGlobalScale = null
@@ -154,7 +153,6 @@ function Filter (context) {
 }
 
 function Osc (context, opts) {
-
   var props = {
     amp: Param(context, 0.4),
     shape: Property('sine'),

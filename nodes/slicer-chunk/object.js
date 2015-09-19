@@ -17,7 +17,6 @@ var extend = require('xtend')
 module.exports = SlicerChunk
 
 function SlicerChunk (parentContext) {
-
   var context = Object.create(parentContext)
   var output = context.output = context.audio.createGain()
   context.output.connect(parentContext.output)
@@ -54,10 +53,8 @@ function SlicerChunk (parentContext) {
   var computedSlots = computed([
     obs.sample, obs.stretch, obs.tempo, obs.eq, obs.volume, obs.sample.slices, obs.sample.resolvedBuffer
   ], function (sample, stretch, tempo, eq, volume, slices, buffer) {
-
     var result = slices.map(function (offset, i) {
       if (stretch && buffer) {
-
         var originalDuration = getOffsetDuration(buffer.duration, offset)
         var stretchedDuration = tempo / 60 * originalDuration
 
@@ -114,7 +111,7 @@ function SlicerChunk (parentContext) {
 
   slots.onUpdate(obs.routes.reconnect)
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     obs.routes.destroy()
   }
 
@@ -148,28 +145,28 @@ function Sample (context) {
   return obs
 }
 
-function sliceOffsets(slices, offset, playToEnd) {
+function sliceOffsets (slices, offset, playToEnd) {
   if (playToEnd) {
     return slices.map(function (pos) {
       return [pos, offset[1]]
     })
   } else {
     return slices.map(function (pos, i) {
-      return [pos, slices[i+1] || offset[1]]
+      return [pos, slices[i + 1] || offset[1]]
     })
   }
 }
 
-function divideSlices(length, offset, playToEnd) {
+function divideSlices (length, offset, playToEnd) {
   var step = 1 / length
   var result = []
   for (var i = 0; i < 1; i += step) {
-    result.push(subOffset(offset, [i, playToEnd ? 1 : i+step]))
+    result.push(subOffset(offset, [i, playToEnd ? 1 : i + step]))
   }
   return result
 }
 
-function subOffset(main, sub) {
+function subOffset (main, sub) {
   var range = main[1] - main[0]
   return [
     main[0] + (sub[0] * range),

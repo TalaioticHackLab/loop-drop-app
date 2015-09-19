@@ -15,8 +15,7 @@ var JsonFile = require('lib/json-file')
 
 module.exports = External
 
-function External(parentContext){
-
+function External (parentContext) {
   var context = Object.create(parentContext)
 
   var obs = Observ({})
@@ -40,21 +39,21 @@ function External(parentContext){
   obs.controllerContext = Observ()
   obs.resolved = Observ()
 
-  obs.resolvePath = function(src){
+  obs.resolvePath = function (src) {
     return resolve(context.cwd, src)
   }
 
-  obs.relative = function(path){
+  obs.relative = function (path) {
     var value = relative(context.cwd, path)
-    if (/^\./.exec(value)){
+    if (/^\./.exec(value)) {
       return value
     } else {
       return './' + value
     }
   }
 
-  obs.destroy = function(){
-    if (obs.node && obs.node.destroy){
+  obs.destroy = function () {
+    if (obs.node && obs.node.destroy) {
       obs.node.destroy()
       obs.node = null
     }
@@ -64,22 +63,22 @@ function External(parentContext){
       obs.file = null
     }
 
-    if (release){
+    if (release) {
       release()
       release = null
       externalParams = null
     }
   }
 
-  obs.getPath = function() {
+  obs.getPath = function () {
     var descriptor = obs()
     if (descriptor && descriptor.src) {
       return obs.resolvePath(descriptor.src)
     }
   }
 
-  watch(obs, function(descriptor){
-    if (externalParams && externalParams.src != descriptor.src){
+  watch(obs, function (descriptor) {
+    if (externalParams && externalParams.src != descriptor.src) {
       release()
       release = null
       externalParams = null
@@ -89,12 +88,12 @@ function External(parentContext){
       }
     }
 
-    if (!externalParams){
-      if (descriptor.src){
+    if (!externalParams) {
+      if (descriptor.src) {
         var path = resolve(parentContext.cwd, descriptor.src)
-        context.fs.exists(path, function(exists){
-          if (exists){
-            release&&release()
+        context.fs.exists(path, function (exists) {
+          if (exists) {
+            release && release()
             obs.file = ObservFile(path, context.fs)
             externalParams = JsonFile(obs.file)
             externalParams.src = descriptor.src
@@ -107,24 +106,22 @@ function External(parentContext){
     }
   })
 
-  function update(){
+  function update () {
     var descriptor = extend(externalParams(), additionalParams())
     var ctor = descriptor && resolveNode(context.nodes, descriptor.node)
 
-
-    if (obs.node && descriptor && obs && lastDescriptor && descriptor.node == lastDescriptor.node){
+    if (obs.node && descriptor && obs && lastDescriptor && descriptor.node == lastDescriptor.node) {
       obs.node.set(descriptor)
     } else {
-
       if (releaseResolved) {
         releaseResolved()
         releaseResolved = null
       }
 
-      if (obs.node && obs.node.destroy){
+      if (obs.node && obs.node.destroy) {
         obs.node.destroy()
 
-        if (releaseCC){
+        if (releaseCC) {
           releaseCC()
           releaseCC = null
           obs.controllerContext.set(null)
@@ -134,14 +131,14 @@ function External(parentContext){
 
       obs.node = null
 
-      if (descriptor && ctor){
+      if (descriptor && ctor) {
         context.cwd = getDirectory(obs.file.path)
         obs.node = ctor(context)
         obs.node.nodeName = descriptor.node
         obs.node.set(descriptor)
         releaseResolved = watch(obs.node, obs.resolved.set)
 
-        if (obs.node.controllerContext){
+        if (obs.node.controllerContext) {
           releaseCC = watch(obs.node.controllerContext, obs.controllerContext.set)
         }
 
@@ -154,10 +151,10 @@ function External(parentContext){
   return obs
 }
 
-function getAdditional(obs){
-  return computed([obs], function(a){
-    return Object.keys(a).reduce(function(res, key){
-      if (key !== 'node' && key !== 'src'){
+function getAdditional (obs) {
+  return computed([obs], function (a) {
+    return Object.keys(a).reduce(function (res, key) {
+      if (key !== 'node' && key !== 'src') {
         res[key] = a[key]
       }
       return res
@@ -165,19 +162,19 @@ function getAdditional(obs){
   })
 }
 
-function resolveNode(nodes, nodeName){
-  if (!nodeName){
+function resolveNode (nodes, nodeName) {
+  if (!nodeName) {
     return null
   }
   var node = nodes || {}
   while (nodeName && node){
     var index = nodeName.indexOf('/')
-    if (index < 0){
+    if (index < 0) {
       node = node[nodeName]
       nodeName = null
     } else {
       var key = nodeName.slice(0, index)
-      nodeName = nodeName.slice(index+1)
+      nodeName = nodeName.slice(index + 1)
       node = node[key]
     }
   }

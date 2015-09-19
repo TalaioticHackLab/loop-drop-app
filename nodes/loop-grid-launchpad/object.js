@@ -34,11 +34,9 @@ var mapGridValue = require('observ-grid/map-values')
 var computeIndexesWhereContains = require('observ-grid/indexes-where-contains')
 
 var stateLights = require('./state-lights.js')
-var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8]
+var repeatStates = [2, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8]
 
-
-module.exports = function(context){
-
+module.exports = function (context) {
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
 
@@ -51,7 +49,7 @@ module.exports = function(context){
   // controller midi port
   var portHolder = ObservMidiPort()
   var duplexPort = portHolder.stream
-  
+
   duplexPort.on('switch', turnOffAllLights)
   duplexPort.on('switching', turnOffAllLights)
 
@@ -76,16 +74,16 @@ module.exports = function(context){
   obs.looper = looper
   obs.portChoices = computedPortNames()
   obs.repeatLength = Observ(2)
-  
+
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)
 
   watch( // compute targets from chunks
-    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape), 
+    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape),
     loopGrid.targets.set
   )
 
   // grab the midi for the current port
-  obs.grabInput = function(){
+  obs.grabInput = function () {
     portHolder.grab()
   }
 
@@ -146,18 +144,17 @@ module.exports = function(context){
   var releaseLoopLengthLights = []
 
   watchButtons(buttons, {
-
-    store: function(value){
-      if (value){
+    store: function (value) {
+      if (value) {
         this.flash(stateLights.green)
         looper.store()
       }
     },
- 
-    flatten: function(value){
-      if (value){
+
+    flatten: function (value) {
+      if (value) {
         var active = activeIndexes()
-        if (looper.isTransforming()){
+        if (looper.isTransforming()) {
           looper.flatten()
           transforms.selector.stop()
           this.flash(stateLights.green, 100)
@@ -174,12 +171,12 @@ module.exports = function(context){
         }
       }
     },
- 
-    undo: function(value){
-      if (value){
-        if (shiftHeld){ // halve loopLength
+
+    undo: function (value) {
+      if (value) {
+        if (shiftHeld) { // halve loopLength
           var current = obs.loopLength() || 1
-          obs.loopLength.set(current/2)
+          obs.loopLength.set(current / 2)
           this.flash(stateLights.green, 100)
         } else {
           looper.undo()
@@ -188,12 +185,12 @@ module.exports = function(context){
         }
       }
     },
- 
-    redo: function(value){
-      if (value){
-        if (shiftHeld){ // double loopLength
+
+    redo: function (value) {
+      if (value) {
+        if (shiftHeld) { // double loopLength
           var current = obs.loopLength() || 1
-          obs.loopLength.set(current*2)
+          obs.loopLength.set(current * 2)
           this.flash(stateLights.green, 100)
         } else {
           looper.redo()
@@ -202,13 +199,13 @@ module.exports = function(context){
         }
       }
     },
- 
-    hold: function(value){
-      if (value){
+
+    hold: function (value) {
+      if (value) {
         var turnOffLight = this.light(stateLights.yellow)
         transforms.holder.start(
-          scheduler.getCurrentPosition(), 
-          transforms.selector.selectedIndexes(), 
+          scheduler.getCurrentPosition(),
+          transforms.selector.selectedIndexes(),
           turnOffLight
         )
       } else {
@@ -216,25 +213,25 @@ module.exports = function(context){
       }
     },
 
-    suppress: function(value){
-      if (value){
+    suppress: function (value) {
+      if (value) {
         var turnOffLight = this.light(stateLights.red)
         transforms.suppressor.start(transforms.selector.selectedIndexes(), turnOffLight)
       } else {
         transforms.suppressor.stop()
       }
     },
- 
-    select: function(value){
-      if (value){
+
+    select: function (value) {
+      if (value) {
         var turnOffLight = this.light(stateLights.green)
-        transforms.selector.start(inputGrabber, function done(){
+        transforms.selector.start(inputGrabber, function done () {
           transforms.mover.stop()
           transforms.selector.clear()
           turnOffLight()
         })
       } else {
-        if (transforms.selector.selectedIndexes().length){
+        if (transforms.selector.selectedIndexes().length) {
           transforms.mover.start(inputGrabber, transforms.selector.selectedIndexes())
         } else {
           transforms.selector.stop()
@@ -244,8 +241,8 @@ module.exports = function(context){
   })
 
   // shift button (share select button)
-  watch(buttons.select, function(value){
-    if (value){
+  watch(buttons.select, function (value) {
+    if (value) {
       shiftHeld = true
 
       // turn on loop length lights
@@ -270,23 +267,21 @@ module.exports = function(context){
 
   buttons.store.light(stateLights.amberLow)
 
-
   var willFlatten = computed([activeIndexes, looper.transforms], function (indexes, transforms) {
     return !!indexes.length || !!transforms.length
   })
 
   // light up store button when transforming (flatten mode)
   var releaseFlattenLight = null
-  watch(willFlatten, function(value){
+  watch(willFlatten, function (value) {
     console.log(value)
-    if (value && !releaseFlattenLight){
+    if (value && !releaseFlattenLight) {
       releaseFlattenLight = buttons.flatten.light(stateLights.greenLow)
-    } else if (!value && releaseFlattenLight){
+    } else if (!value && releaseFlattenLight) {
       releaseFlattenLight()
       releaseFlattenLight = null
     }
   })
-
 
   var repeatButtons = MidiButtons(duplexPort, {
     0: '144/8',
@@ -302,40 +297,39 @@ module.exports = function(context){
   // repeater
   var releaseRepeatLight = null
   mapWatchDiff(repeatStates, repeatButtons, obs.repeatLength.set)
-  watch(obs.repeatLength, function(value){
+  watch(obs.repeatLength, function (value) {
     var button = repeatButtons[repeatStates.indexOf(value)]
-    if (button){
+    if (button) {
       if (releaseRepeatLight) releaseRepeatLight()
       releaseRepeatLight = button.light(stateLights.amberLow)
     }
     transforms.holder.setLength(value)
-    if (value < 2){
+    if (value < 2) {
       transforms.repeater.start(grabInputExcludeNoRepeat, value)
     } else {
       transforms.repeater.stop()
     }
   })
 
-
   // visual metronome / loop position
   var releaseBeatLight = null
   var currentBeatLight = null
   var currentBeat = null
 
-  watch(loopGrid.loopPosition, function(value){
+  watch(loopGrid.loopPosition, function (value) {
     var beat = Math.floor(value[0])
     var index = Math.floor(value[0] / value[1] * 8)
     var button = repeatButtons[index]
 
-    if (index != currentBeatLight){
-      if (button){
-        releaseBeatLight&&releaseBeatLight()
+    if (index != currentBeatLight) {
+      if (button) {
+        releaseBeatLight && releaseBeatLight()
         releaseBeatLight = button.light(stateLights.greenLow, 0)
       }
       currentBeatLight = index
     }
 
-    if (beat != currentBeat){
+    if (beat != currentBeat) {
       button.flash(stateLights.green)
       currentBeat = beat
     }
@@ -343,7 +337,7 @@ module.exports = function(context){
 
   // cleanup / disconnect from keyboard on destroy
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     turnOffAllLights()
     portHolder.destroy()
     output.destroy()
@@ -354,22 +348,22 @@ module.exports = function(context){
 
   // scoped
 
-  function turnOffAllLights(){
+  function turnOffAllLights () {
     duplexPort.write([176, 0, 0])
   }
 
 }
 
-function round(value, dp){
+function round (value, dp) {
   var pow = Math.pow(10, dp || 0)
   return Math.round(value * pow) / pow
 }
 
-function getLaunchpadGridMapping(){
+function getLaunchpadGridMapping () {
   var result = []
-  for (var r=0;r<8;r++){
-    for (var c=0;c<8;c++){
-      var noteId = (r*16) + (c % 8)
+  for (var r = 0;r < 8;r++) {
+    for (var c = 0;c < 8;c++) {
+      var noteId = (r * 16) + (c % 8)
       result.push('144/' + noteId)
     }
   }

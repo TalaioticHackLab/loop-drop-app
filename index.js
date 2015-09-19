@@ -26,7 +26,7 @@ insertCss(require('./styles'))
 
 // keyboard layout
 var keyboardLayout = Observ()
-keyboardLayout(function(value) { console.log('Keyboard: ' + value) })
+keyboardLayout(function (value) { console.log('Keyboard: ' + value) })
 watchKeyboardLayout(keyboardLayout.set)
 
 // midi ports
@@ -50,7 +50,7 @@ var rootContext = window.rootContext = {
   zoom: Property(1.1)
 }
 
-watch(rootContext.zoom, function(value) {
+watch(rootContext.zoom, function (value) {
   frame.setZoomFactor(value || 1)
 })
 
@@ -65,7 +65,7 @@ document.addEventListener('mousewheel', function (e) {
   }
 })
 
-document.addEventListener("DOMContentLoaded", function (event) {
+document.addEventListener('DOMContentLoaded', function (event) {
   ipc.send('loaded')
 })
 
@@ -86,7 +86,7 @@ ipc.on('load-project', function (path) {
   })
 })
 
-function createRootElement(project) {
+function createRootElement (project) {
   var renderer = MainLoop(project, renderNode, VirtualDom)
 
   project(update)
@@ -107,7 +107,7 @@ function createRootElement(project) {
 
 }
 
-function ensureProject(path, cb) {
+function ensureProject (path, cb) {
   rootContext.fs.exists(path, function (exists) {
     if (exists) {
       cb()

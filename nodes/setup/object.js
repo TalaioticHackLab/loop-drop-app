@@ -19,8 +19,7 @@ var setRoute = require('lib/set-route')
 
 module.exports = Setup
 
-function Setup(parentContext){
-
+function Setup (parentContext) {
   var context = Object.create(parentContext)
   var audioContext = context.audio
   var refreshingParamCount = false
@@ -32,7 +31,7 @@ function Setup(parentContext){
     volume: Property(1),
     globalScale: Property({
       offset: 0,
-      notes: [0,2,4,5,7,9,11]
+      notes: [0, 2, 4, 5, 7, 9, 11]
     })
   })
 
@@ -48,7 +47,7 @@ function Setup(parentContext){
 
   context.active = node.output.active
 
-  watch(node.volume, function(value){
+  watch(node.volume, function (value) {
     node.output.gain.value = value
   })
 
@@ -56,21 +55,21 @@ function Setup(parentContext){
     context.triggerEvent = b
   })
 
-  node.onTrigger(function(event){
+  node.onTrigger(function (event) {
     node.output.trigger()
     var split = event.id.split('/')
     var chunk = context.chunkLookup.get(split[0])
     var slotId = split[1]
-    if (chunk){
-      if (event.event === 'start'){
+    if (chunk) {
+      if (event.event === 'start') {
         chunk.triggerOn(slotId, event.time)
-      } else if (event.event === 'stop'){
+      } else if (event.event === 'stop') {
         chunk.triggerOff(slotId, event.time)
       }
     }
   })
 
-  node.chunks.resolveAvailable = function(id){
+  node.chunks.resolveAvailable = function (id) {
     var base = id
     var lookup = context.chunkLookup()
     var incr = 0
@@ -86,7 +85,7 @@ function Setup(parentContext){
   // deprecated: use chunks.resolveAvailable
   node.resolveAvailableChunk = node.chunks.resolveAvailable
 
-  node.destroy = function(){
+  node.destroy = function () {
     node.chunks.destroy()
     node.controllers.destroy()
     context.paramLookup.destroy()
@@ -95,18 +94,17 @@ function Setup(parentContext){
   // maps and lookup
   node.controllers.resolved = map(node.controllers, resolve)
   node.chunks.resolved = map(node.chunks, resolve)
-  node.chunks.lookup = lookup(node.chunks, function(x){
+  node.chunks.lookup = lookup(node.chunks, function (x) {
     var descriptor = get(x)
     return descriptor && descriptor.id || undefined
   })
 
-  context.chunkLookup = lookup(node.chunks, function(x){
-    if (x){
+  context.chunkLookup = lookup(node.chunks, function (x) {
+    if (x) {
       var data = x.resolved ? x.resolved() : x()
       return data && data.id || undefined
     }
   }, resolve, resolveInner)
-
 
   // extend param lookup
   var lookups = []
@@ -115,8 +113,8 @@ function Setup(parentContext){
   }
 
   lookups.push(
-    lookup(node.chunks, function(x){
-      if (x && x.onSchedule){
+    lookup(node.chunks, function (x) {
+      if (x && x.onSchedule) {
         return x.id()
       }
     }, resolve, resolveInner)
@@ -134,33 +132,33 @@ function Setup(parentContext){
 
   context.paramLookup(refreshParamCount)
 
-  node.grabInput = function(){
+  node.grabInput = function () {
     var length = node.controllers.getLength()
-    for (var i=0;i<length;i++){
+    for (var i = 0;i < length;i++) {
       var controller = node.controllers.get(i)
-      if (controller.grabInput){
+      if (controller.grabInput) {
         controller.grabInput()
       }
     }
 
     // now focus the selected chunk
-    if (node.selectedChunkId){
+    if (node.selectedChunkId) {
       var chunkId = node.selectedChunkId()
-      for (var i=0;i<length;i++){
+      for (var i = 0;i < length;i++) {
         var controller = node.controllers.get(i)
         var chunkPositions = controller().chunkPositions || {}
-        if (controller.grabInput && chunkPositions[chunkId]){
+        if (controller.grabInput && chunkPositions[chunkId]) {
           controller.grabInput()
         }
       }
     }
   }
 
-  node.updateChunkReferences = function(oldId, newId){
-    node.controllers.forEach(function(controller){
-      if (controller.chunkPositions && controller.chunkPositions()){
+  node.updateChunkReferences = function (oldId, newId) {
+    node.controllers.forEach(function (controller) {
+      if (controller.chunkPositions && controller.chunkPositions()) {
         var value = controller.chunkPositions()[oldId]
-        if (value && controller.chunkPositions.put){
+        if (value && controller.chunkPositions.put) {
           controller.chunkPositions.delete(oldId)
           if (newId) {
             controller.chunkPositions.put(newId, value)
@@ -176,7 +174,7 @@ function Setup(parentContext){
       updateRouteReferences(chunk, oldId, newId)
     })
 
-    if (node.selectedChunkId() === oldId){
+    if (node.selectedChunkId() === oldId) {
       node.selectedChunkId.set(newId)
     }
   }
@@ -201,15 +199,15 @@ function Setup(parentContext){
   }
 }
 
-function get(obs){
+function get (obs) {
   return typeof obs == 'function' ? obs() : obs
 }
 
-function resolve(node){
+function resolve (node) {
   return node && node.resolved || node
 }
 
-function resolveInner(node){
+function resolveInner (node) {
   return node && node.node || node
 }
 
@@ -220,7 +218,7 @@ function updateRouteReferences (chunk, oldId, newId) {
     Object.keys(routes).forEach(function (key) {
       var value = routes[key]
       var match = typeof value == 'string' && value.match(/^(.+)#(.+)$/)
-      if (match && match[1] === oldId){
+      if (match && match[1] === oldId) {
         if (newId) {
           setRoute(chunk, key, newId + '#' + match[2])
         } else {
@@ -231,10 +229,10 @@ function updateRouteReferences (chunk, oldId, newId) {
   }
 }
 
-function updateParamReferences(node, oldId, newId){
+function updateParamReferences (node, oldId, newId) {
   var changed = false
-  var result = JSON.stringify(node(), function(key, value){
-    if (value && value.node === 'linkParam' && value.param === oldId){
+  var result = JSON.stringify(node(), function (key, value) {
+    if (value && value.node === 'linkParam' && value.param === oldId) {
       changed = true
       if (newId) {
         value.param = newId
@@ -245,7 +243,7 @@ function updateParamReferences(node, oldId, newId){
     return value
   })
 
-  if (changed){
+  if (changed) {
     node.set(JSON.parse(result))
   }
 }

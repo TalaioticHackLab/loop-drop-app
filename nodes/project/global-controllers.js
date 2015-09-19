@@ -4,7 +4,7 @@ var Select = require('lib/widgets/select')
 
 module.exports = function (collection) {
   var spawners = collection.context.project.availableGlobalControllers()
-  var options = [] 
+  var options = []
 
   spawners.forEach(function (descriptor) {
     if (!hasNode(collection, descriptor.node)) {

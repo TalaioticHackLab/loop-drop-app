@@ -8,8 +8,8 @@ var ExternalRouter = require('lib/external-router')
 var ChainScheduler = require('lib/chain-scheduler')
 var Varhash = require('observ-varhash')
 var Struct = require('observ-struct')
-var lookup =  require('observ-node-array/lookup')
-var merge =  require('observ-node-array/merge')
+var lookup = require('observ-node-array/lookup')
+var merge = require('observ-node-array/merge')
 
 module.exports = MeddlerChunk
 
@@ -35,7 +35,7 @@ function MeddlerChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'}, volume),
     params: Property([]),
     volume: volume,
-    color: Property([255,255,0]),
+    color: Property([255, 255, 0]),
     paramValues: NodeVarhash(parentContext),
     selectedSlotId: Property()
   })
@@ -72,7 +72,7 @@ function MeddlerChunk (parentContext) {
   obs.output = context.output
   slots.onUpdate(obs.routes.reconnect)
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     obs.routes.destroy()
   }
 

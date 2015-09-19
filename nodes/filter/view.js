@@ -17,13 +17,13 @@ var typeChoices = [
 var gainTypes = ['lowshelf', 'highshelf', 'peaking']
 var qTypes = ['lowpass', 'highpass', 'bandpass', 'peaking', 'notch', 'allpass']
 
-module.exports = function renderFilter(node){
+module.exports = function renderFilter (node) {
   var data = node()
 
   var params = [
     Select(node.type, {
       defaultValue: 'lowpass',
-      options: typeChoices 
+      options: typeChoices
     }),
 
     ModRange(node.frequency, {
@@ -34,7 +34,7 @@ module.exports = function renderFilter(node){
     })
   ]
 
-  if (~qTypes.indexOf(data.type || 'lowpass')){
+  if (~qTypes.indexOf(data.type || 'lowpass')) {
     params.push(
       ModRange(node.Q, {
         title: 'Q',
@@ -45,7 +45,7 @@ module.exports = function renderFilter(node){
     )
   }
 
-  if (~gainTypes.indexOf(data.type || 'lowpass')){
+  if (~gainTypes.indexOf(data.type || 'lowpass')) {
     params.push(
       ModRange(node.gain, {
         title: 'gain',

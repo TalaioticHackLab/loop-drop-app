@@ -10,7 +10,7 @@ var types = [
   ['Pink', 'pink']
 ]
 
-module.exports = function renderNoise (node){
+module.exports = function renderNoise (node) {
   var data = node()
 
   return h('SourceNode -noise', [
@@ -19,8 +19,8 @@ module.exports = function renderNoise (node){
       h('span', data.type || 'white')
     ])),
     h('ParamList', [
-      Select(node.type, { 
-        options: types 
+      Select(node.type, {
+        options: types
       }),
       ModRange(node.amp, {
         title: 'amp',

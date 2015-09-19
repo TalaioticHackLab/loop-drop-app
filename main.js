@@ -13,15 +13,15 @@ var mainWindow = null
 var currentProject = null
 var quiting = false
 
-app.on('before-quit', function() {
+app.on('before-quit', function () {
   quiting = true
 })
 
-ipc.on('choose-project', function(event, arg) {
+ipc.on('choose-project', function (event, arg) {
   if (arg === 'new') {
     dialog.showSaveDialog({
       title: 'Create New Project'
-    }, function(path){
+    }, function (path) {
       if (path) {
         createProject(path)
       }
@@ -29,10 +29,10 @@ ipc.on('choose-project', function(event, arg) {
   } else if (arg === 'demo') {
     loadProject(getDemoProjectPath())
   } else if (arg === 'browse') {
-    dialog.showOpenDialog({ 
+    dialog.showOpenDialog({
       title: 'Browse for Project Folder',
       properties: [ 'openDirectory' ]
-    }, function(paths) {
+    }, function (paths) {
       if (paths && paths.length) {
         loadProject(paths[0])
       }
@@ -42,24 +42,23 @@ ipc.on('choose-project', function(event, arg) {
   }
 })
 
-ipc.on('loaded', function(event, arg) {
+ipc.on('loaded', function (event, arg) {
   event.sender.send('load-project', currentProject)
 })
 
-app.on('window-all-closed', function() {
-  //if (process.platform != 'darwin')
+app.on('window-all-closed', function () {
+  // if (process.platform != 'darwin')
   app.quit()
 })
 
-app.on('ready', function() {
+app.on('ready', function () {
   if (process.platform === 'darwin') {
     Menu.setApplicationMenu(menu)
   }
   chooseProject()
-});
+})
 
-function chooseProject() {
-
+function chooseProject () {
   if (mainWindow) {
     mainWindow.close()
   }
@@ -68,43 +67,42 @@ function chooseProject() {
     welcomeWindow.close()
   }
 
-
   welcomeWindow = new BrowserWindow({
     title: 'Choose Project',
     'accept-first-mouse': true,
-    width: 500, 
+    width: 500,
     height: 550,
     show: false
   })
 
-  welcomeWindow.webContents.on('did-finish-load', function() {
+  welcomeWindow.webContents.on('did-finish-load', function () {
     welcomeWindow.show()
   })
 
-  welcomeWindow.webContents.on('will-navigate', function(e, url) {
+  welcomeWindow.webContents.on('will-navigate', function (e, url) {
     e.preventDefault()
     Shell.openExternal(url)
   })
 
   welcomeWindow.loadUrl('file://' + __dirname + '/views/welcome.html')
 
-  welcomeWindow.on('closed', function() {
+  welcomeWindow.on('closed', function () {
     welcomeWindow = null
   })
 }
 
-function createProject(path) {
-  fs.mkdir(path, function(err) {
+function createProject (path) {
+  fs.mkdir(path, function (err) {
     if (err) throw err
     loadProject(path)
   })
 }
 
-function getDemoProjectPath() {
+function getDemoProjectPath () {
   // find demo-project by looking upwards
   var searchLevels = 2
   var lookUp = []
-  for (var i=0;i<searchLevels;i++) {
+  for (var i = 0;i < searchLevels;i++) {
     lookUp.push('..')
     var current = join.apply(this, [__dirname].concat(lookUp, 'demo-project'))
     if (fs.existsSync(current)) {
@@ -116,8 +114,7 @@ function getDemoProjectPath() {
   return join(__dirname, 'demo-project')
 }
 
-function loadProject(path) {
-
+function loadProject (path) {
   if (mainWindow) {
     mainWindow.close()
   }
@@ -129,28 +126,28 @@ function loadProject(path) {
   currentProject = path
 
   mainWindow = new BrowserWindow({
-    width: 1400, 
+    width: 1400,
     height: 900,
     title: path + ' — Loop Drop',
     'accept-first-mouse': true,
     show: false
   })
 
-  mainWindow.webContents.on('did-finish-load', function() {
+  mainWindow.webContents.on('did-finish-load', function () {
     mainWindow.show()
   })
 
-  mainWindow.webContents.on('will-navigate', function(e) {
+  mainWindow.webContents.on('will-navigate', function (e) {
     e.preventDefault()
   })
 
-  mainWindow.webContents.on('will-navigate', function(e, url) {
+  mainWindow.webContents.on('will-navigate', function (e, url) {
     e.preventDefault()
     Shell.openExternal(url)
   })
 
   mainWindow.loadUrl('file://' + __dirname + '/views/window.html')
-  mainWindow.on('close', function() {
+  mainWindow.on('close', function () {
     mainWindow = null
     if (!quiting) {
       chooseProject()

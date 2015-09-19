@@ -17,14 +17,14 @@ module.exports = RecordingView
 
 function RecordingView (recording) {
   return h('RecordingNode', [
-    
+
     h('div.main', {
       tabIndex: 0,
       'ev-keydown': ev(handleTimelineKeyEvent, recording)
     }, [
       ArrangementTimeline(recording)
     ]),
-    
+
     h('div.options', [
 
       recording.rendering() ? h('progress', {
@@ -69,7 +69,7 @@ function RecordingView (recording) {
         }, 'Export Wave')
       ])
     ])
-  
+
   ])
 }
 
@@ -88,17 +88,17 @@ function ArrangementTimeline (recording) {
     }, [
       renderSvgTimeline(duration, widthMultiplier),
       h('input', {
-        type: 'range', 
-        min: 0, 
-        max: duration, 
+        type: 'range',
+        min: 0,
+        max: duration,
         style: {
-          width: finalWidth + 'px' 
+          width: finalWidth + 'px'
         },
-        step: 0.01, 
+        step: 0.01,
         value: ObservValueHook(recording.position)
       }),
       h('div.cursor', {
-        style: ObservStyleHook(recording.position, 'transform', function(value) {
+        style: ObservStyleHook(recording.position, 'transform', function (value) {
           return 'translateX(' + (value) * recording.scale() + 'px)'
         })
       }),
@@ -113,7 +113,7 @@ function ArrangementTimeline (recording) {
             var waveScaler = (40 / widthMultiplier) * widthMultiplier
             return h('div.clip', {
               tabIndex: 0,
-              'ev-keydown': ev(handleClipKeyEvent, clip), //bcksp
+              'ev-keydown': ev(handleClipKeyEvent, clip), // bcksp
               style: {
                 width: clip.duration.resolved() * widthMultiplier + 'px'
               }
@@ -123,7 +123,7 @@ function ArrangementTimeline (recording) {
                 height: 100,
                 viewBox: viewBox(
                   clip.startOffset() * waveScaler, 0,
-                  clip.duration.resolved() * waveScaler, 
+                  clip.duration.resolved() * waveScaler,
                   100
                 ),
                 preserveAspectRatio: 'none',
@@ -172,23 +172,23 @@ function handleClipKeyEvent (ev) {
   }
 }
 
-function handleZoom(delta, recording) {
+function handleZoom (delta, recording) {
   var value = Math.round(Math.max(1, Math.min(300, recording.scale() - (delta))))
   recording.scale.set(value)
   recording.centerOnCursor()
 }
 
-function handleTrimEnd(ev) {
+function handleTrimEnd (ev) {
   var clip = this.data
   var markers = ev.altKey ? null : clip.cuePoints()
   var widthMultiplier = clip.context.recording.scale()
-  if (ev.type === 'mousedown'){
+  if (ev.type === 'mousedown') {
     this.lastOffset = 0
     this.startValue = clip.duration.resolved()
     this.start = ev
   } else if (this.start) {
     var offset = (ev.x - this.start.x) / widthMultiplier
-    if (this.lastOffset !== offset){
+    if (this.lastOffset !== offset) {
       var newValue = getClosestPoint(markers, clip.startOffset() + this.startValue + offset) - clip.startOffset()
       var duration = Math.min(Math.max(0, newValue), clip.duration.max())
       clip.duration.set(duration)
@@ -197,18 +197,18 @@ function handleTrimEnd(ev) {
   }
 }
 
-function handleTrimStart(ev) {
+function handleTrimStart (ev) {
   var clip = this.data
   var markers = ev.altKey ? null : clip.cuePoints()
   var widthMultiplier = clip.context.recording.scale()
-  if (ev.type === 'mousedown'){
+  if (ev.type === 'mousedown') {
     this.lastOffset = 0
     this.duration = clip.duration.resolved()
     this.startOffset = clip.startOffset()
     this.start = ev
   } else if (this.start) {
     var offset = ev.offsetX / widthMultiplier
-    if (this.lastOffset !== offset){
+    if (this.lastOffset !== offset) {
       var newValue = getClosestPoint(markers, this.startOffset + offset)
       var startOffset = Math.min(Math.max(0, newValue), clip.startOffset.max())
       clip.startOffset.set(startOffset)
@@ -222,7 +222,7 @@ function renderSvgTimeline (length, widthMultiplier) {
   var elements = []
   var xOffset = 6
 
-  for (var i=0;i<length;i+=1) {
+  for (var i = 0;i < length;i += 1) {
     var x = i * widthMultiplier + xOffset
     elements.push(svg('line', {
       x1: x, x2: x, y1: 0, y2: i % 5 ? 3 : 12,
@@ -232,7 +232,7 @@ function renderSvgTimeline (length, widthMultiplier) {
     if (i % 5 === 0) {
       var val = formatTime(i)
       elements.push(svg('text', {
-        x: x+3, y: 5
+        x: x + 3, y: 5
       }, val))
     }
   }
@@ -254,14 +254,14 @@ function viewBox (x, y, width, height) {
   return x + ' ' + y + ' ' + width + ' ' + height
 }
 
-function toCssAlpha(rgb, alpha) {
+function toCssAlpha (rgb, alpha) {
   return 'rgba(' + rgb.join(',') + ',' + alpha + ')'
 }
 
 function formatTime (value) {
   var minutes = Math.floor(value / 60)
   var seconds = Math.round(value % 60)
-  return minutes + ':' + ('0'+seconds).slice(-2)
+  return minutes + ':' + ('0' + seconds).slice(-2)
 }
 
 function getPaddedHours (value) {
@@ -280,6 +280,6 @@ function getPaddedFraction (value) {
   return padded((value % 1) * 100)
 }
 
-function padded(val) {
-  return ('0'+Math.round(val)).slice(-2)
+function padded (val) {
+  return ('0' + Math.round(val)).slice(-2)
 }

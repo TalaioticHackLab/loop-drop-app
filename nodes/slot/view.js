@@ -5,7 +5,7 @@ var Range = require('lib/params/range')
 
 module.exports = function renderSlot (node) {
   return h('AudioSlot', [
-    
+
     checkIsTrigger(node) ? h('section', [
       h('h1', 'Sources'),
       Collection(node.sources),
@@ -25,9 +25,9 @@ module.exports = function renderSlot (node) {
     h('section.options', [
       h('h1', 'Output'),
       Range(node.volume, {
-        title: 'volume', 
-        flex: true, 
-        defaultValue: 1, 
+        title: 'volume',
+        flex: true,
+        defaultValue: 1,
         format: 'dB'
       })
     ]),
@@ -35,7 +35,7 @@ module.exports = function renderSlot (node) {
   ])
 }
 
-function checkIsTrigger(node){
+function checkIsTrigger (node) {
   if (node.context.slotProcessorsOnly) {
     return false
   }

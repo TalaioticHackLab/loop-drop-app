@@ -1,4 +1,3 @@
-
 var ObservStruct = require('observ-struct')
 var Observ = require('observ')
 var Property = require('observ-default')
@@ -23,7 +22,6 @@ var applyParams = require('lib/apply-params')
 module.exports = ChromaticChunk
 
 function ChromaticChunk (parentContext) {
-
   var context = Object.create(parentContext)
 
   var output = context.output = context.audio.createGain()
@@ -33,13 +31,13 @@ function ChromaticChunk (parentContext) {
 
   var defaultScale = {
     offset: 0,
-    notes: [0,2,4,5,7,9,11]
+    notes: [0, 2, 4, 5, 7, 9, 11]
   }
 
   var volume = Property(1)
   var obs = ObservStruct({
     id: Observ(),
-    shape: Property([1,4]),
+    shape: Property([1, 4]),
 
     templateSlot: SingleNode(context),
 
@@ -57,19 +55,19 @@ function ChromaticChunk (parentContext) {
     routes: ExternalRouter(context, {output: '$default'}, volume),
     flags: Property([]),
     chokeAll: Property(false),
-    color: Property([255,255,255]),
+    color: Property([255, 255, 255]),
     selectedSlotId: Observ()
   })
 
   context.offset = obs.offset
 
   var globalScale = Property(defaultScale)
-  if (context.globalScale){
+  if (context.globalScale) {
     var releaseGlobalScale = watch(context.globalScale, globalScale.set)
   }
 
-  var scale = computed([obs.scale, globalScale], function(scale, globalScale){
-    if (scale === '$global'){
+  var scale = computed([obs.scale, globalScale], function (scale, globalScale) {
+    if (scale === '$global') {
       return globalScale
     } else if (scale instanceof Object) {
       return scale
@@ -82,7 +80,7 @@ function ChromaticChunk (parentContext) {
   obs.context = context
   context.chunk = obs
 
-  obs.volume(function(value){
+  obs.volume(function (value) {
     output.gain.value = value
   })
 
@@ -91,17 +89,17 @@ function ChromaticChunk (parentContext) {
     lookup(obs.slots, 'id')
   ])
 
-  var computedSlots = computed([obs.templateSlot, scale, obs.shape], function(template, scale, shape){
-    var length = (shape[0]*shape[1])||0
+  var computedSlots = computed([obs.templateSlot, scale, obs.shape], function (template, scale, shape) {
+    var length = (shape[0] * shape[1]) || 0
     var result = []
-    for (var i=0;i<length;i++){
-      if (template){
+    for (var i = 0;i < length;i++) {
+      if (template) {
         var slot = obtainWithParams(template, {
           id: String(i),
           value: i,
           scale: scale
         })
-        if (slot){
+        if (slot) {
           result.push(slot)
         }
       }
@@ -111,35 +109,35 @@ function ChromaticChunk (parentContext) {
 
   computedSlots(scaleSlots.set)
 
-  obs.triggerOn = function(id, at){
+  obs.triggerOn = function (id, at) {
     var slot = context.slotLookup.get(id)
 
-    if (obs.chokeAll()){
-      scaleSlots.forEach(function(slot){
+    if (obs.chokeAll()) {
+      scaleSlots.forEach(function (slot) {
         slot.choke(at)
       })
     }
 
-    if (slot){
+    if (slot) {
       slot.triggerOn(at)
     }
   }
 
-  obs.triggerOff = function(id, at){
+  obs.triggerOff = function (id, at) {
     var slot = context.slotLookup.get(id)
-    if (slot){
+    if (slot) {
       slot.triggerOff(at)
     }
   }
 
-  obs.getSlot = function(id){
+  obs.getSlot = function (id) {
     return context.slotLookup.get(id)
   }
 
-  obs.triggers = computed([obs.id, obs.shape], function(id, shape){
+  obs.triggers = computed([obs.id, obs.shape], function (id, shape) {
     var length = Array.isArray(shape) && shape[0] * shape[1] || 0
     var result = []
-    for (var i=0;i<length;i++){
+    for (var i = 0;i < length;i++) {
       result.push(String(i))
     }
     return result
@@ -147,7 +145,7 @@ function ChromaticChunk (parentContext) {
 
   obs.grid = computed([obs.triggers, obs.shape], ArrayGrid)
 
-  obs.resolvedGrid = computed([obs.triggers, obs.shape], function(triggers, shape){
+  obs.resolvedGrid = computed([obs.triggers, obs.shape], function (triggers, shape) {
     return ArrayGrid(triggers.map(getGlobalId), shape)
   })
 
@@ -171,7 +169,7 @@ function ChromaticChunk (parentContext) {
 }
 
 function getNewValue (object, value) {
-  if (object instanceof Object && !Array.isArray(object)){
+  if (object instanceof Object && !Array.isArray(object)) {
     var v = obtain(object)
     v.value = getNewValue(v.value, value)
     return v
@@ -181,7 +179,7 @@ function getNewValue (object, value) {
 }
 
 function getValue (object, defaultValue) {
-  if (object instanceof Object && !Array.isArray(object)){
+  if (object instanceof Object && !Array.isArray(object)) {
     return getValue(object.value, defaultValue)
   } else {
     return object != null ? object : defaultValue
@@ -189,8 +187,8 @@ function getValue (object, defaultValue) {
 }
 
 function obtainWithParams (obj, params) {
-  return JSON.parse(JSON.stringify(obj, function(k,v){
-    if (v && v.$param){
+  return JSON.parse(JSON.stringify(obj, function (k, v) {
+    if (v && v.$param) {
       return params[v.$param]
     } else {
       return v
@@ -203,12 +201,12 @@ function obtain (obj) {
 }
 
 function mod (n, m) {
-  return ((n%m)+m)%m
+  return ((n % m) + m) % m
 }
 
 function getNote (scale, offset) {
-  scale = Array.isArray(scale) ? scale : [0,1,2,3,4,5,6,7,8,9,10,11]
+  scale = Array.isArray(scale) ? scale : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
   var position = mod(offset, scale.length)
-  var multiplier = Math.floor(offset/scale.length)
+  var multiplier = Math.floor(offset / scale.length)
   return scale[position] + multiplier * 12
 }

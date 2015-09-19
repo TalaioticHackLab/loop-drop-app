@@ -1,7 +1,7 @@
 var randomColor = require('lib/random-color')
 
 module.exports = {
-  name: "Chromatic",
+  name: 'Chromatic',
   node: 'chunk/scale',
   group: 'chunks',
   description: 'Describe a single audio slot that is chromatically scaled over specified shape.',

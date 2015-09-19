@@ -1,4 +1,3 @@
-
 var JSMN = require('lib/jsmn.js')
 var deepEqual = require('deep-equal')
 var watch = require('observ/watch')
@@ -11,8 +10,8 @@ var NO_TRANSACTION = {}
 
 module.exports = RawEditor
 
-function RawEditor(fileObject){
-  if (!(this instanceof RawEditor)){
+function RawEditor (fileObject) {
+  if (!(this instanceof RawEditor)) {
     return new RawEditor(fileObject)
   }
   this.fileObject = fileObject
@@ -21,7 +20,7 @@ function RawEditor(fileObject){
 
 RawEditor.prototype.type = 'Widget'
 
-RawEditor.prototype.init = function(){
+RawEditor.prototype.init = function () {
   var element = document.createElement('div')
   element.className = 'RawEditor'
 
@@ -32,11 +31,11 @@ RawEditor.prototype.init = function(){
   window.editors = window.editors || []
   window.editors.push(textEditor)
 
-  textEditor.setTheme('ace/theme/ambiance');
+  textEditor.setTheme('ace/theme/ambiance')
   textEditor.session.setMode('ace/mode/javascript')
   textEditor.session.setUseWorker(false)
   textEditor.session.setTabSize(2)
-  textEditor.renderer.setScrollMargin(20,100)
+  textEditor.renderer.setScrollMargin(20, 100)
   textEditor.renderer.setPadding(20)
   textEditor.renderer.setShowGutter(false)
 
@@ -46,24 +45,24 @@ RawEditor.prototype.init = function(){
   var currentTransaction = NO_TRANSACTION
   var currentSaveTransaction = NO_TRANSACTION
 
-  textEditor.setFile = function(fileObject){
+  textEditor.setFile = function (fileObject) {
     clearTimeout(saveTimer)
 
-    if (self.release){
+    if (self.release) {
       self.release()
       self.release = null
     }
 
     currentFile = fileObject
 
-    if (fileObject){
+    if (fileObject) {
       self.release = watch(fileObject, update)
     }
   }
 
-  function save(){
+  function save () {
     var value = textEditor.session.getValue()
-    if (currentFile){
+    if (currentFile) {
       try {
         var object = JSMN.parse(value)
         currentSaveTransaction = object
@@ -73,9 +72,9 @@ RawEditor.prototype.init = function(){
     }
   }
 
-  function update(){
+  function update () {
     var data = currentFile ? currentFile() : null
-    if (data && currentSaveTransaction !== data._diff && !deepEqual(currentSaveTransaction,data)){
+    if (data && currentSaveTransaction !== data._diff && !deepEqual(currentSaveTransaction, data)) {
       var newValue = JSMN.stringify(data || {})
       currentTransaction = newValue
       textEditor.session.setValue(newValue, -1)
@@ -84,22 +83,22 @@ RawEditor.prototype.init = function(){
   }
 
   var blurTimer = null
-  textEditor.on('focus', function(){
+  textEditor.on('focus', function () {
     clearTimeout(blurTimer)
   })
 
-  textEditor.on('blur', function(){
+  textEditor.on('blur', function () {
     clearTimeout(blurTimer)
-    blurTimer = setTimeout(function(){
-      if (!textEditor.isFocused()){
+    blurTimer = setTimeout(function () {
+      if (!textEditor.isFocused()) {
         update()
       }
     }, 100)
   })
 
   var saveTimer = null
-  textEditor.on('change', function(){
-    if (currentTransaction === NO_TRANSACTION){
+  textEditor.on('change', function () {
+    if (currentTransaction === NO_TRANSACTION) {
       clearTimeout(saveTimer)
       saveTimer = setTimeout(save, 100)
     }
@@ -111,17 +110,17 @@ RawEditor.prototype.init = function(){
   return element
 }
 
-RawEditor.prototype.update = function(prev, elem){
+RawEditor.prototype.update = function (prev, elem) {
   this.editor = prev.editor
   this.release = prev.release
 
-  if (prev.file !== this.file){
+  if (prev.file !== this.file) {
     this.editor.setFile(this.fileObject)
   }
   return elem
 }
 
-RawEditor.prototype.destroy = function(elem){
+RawEditor.prototype.destroy = function (elem) {
   this.editor.destroy()
   this.release && this.release()
   this.release = null

@@ -18,9 +18,9 @@ module.exports = function renderGrid (controller) {
   var shape = playback.shape()
 
   var rows = []
-  for (var r=0;r<shape[0];r++){
+  for (var r = 0;r < shape[0];r++) {
     var buttons = []
-    for (var c=0;c<shape[1];c++){
+    for (var c = 0;c < shape[1];c++) {
       buttons.push(h('div.button', {
         'ev-dragenter': MPE(enterButton, controller),
         'ev-dragleave': MPE(leaveButton, controller)
@@ -37,14 +37,14 @@ module.exports = function renderGrid (controller) {
     'ev-dragenter': MPE(dragEnter, controller),
   }, [
     h('div.rows', {'ev-state': GridStateHook(controller.gridState)}, rows),
-    h('div.chunks', chunks.map(function(chunk){
+    h('div.chunks', chunks.map(function (chunk) {
       return renderChunkBlock(chunk, controller)
     }))
   ])
 
 }
 
-function renderChunkBlock(chunk, controller){
+function renderChunkBlock (chunk, controller) {
   var setup = controller.context.setup
   var shape = controller.playback.shape()
 
@@ -63,7 +63,7 @@ function renderChunkBlock(chunk, controller){
     'width': percent(box.right - box.left),
     'border-color': color(chunk.color, 1),
     'background-color': color(chunk.color, 0.1),
-    'color': color(mixColor(chunk.color, [255,255,255]),1)
+    'color': color(mixColor(chunk.color, [255, 255, 255]), 1)
   }
 
   var node = setup.chunks.lookup.get(chunk.id)
@@ -76,7 +76,7 @@ function renderChunkBlock(chunk, controller){
     'ev-dblclick': send(toggleChunk, node),
     'ev-dragstart': MPE(startDrag, node),
     'ev-dragend': MPE(endDrag, node)
-  },[
+  }, [
     h('span.label', chunk.id),
     chunk.resizable ? [
       h('div.handle -bottom', {
@@ -91,26 +91,26 @@ function renderChunkBlock(chunk, controller){
   ])
 }
 
-function resize(ev){
+function resize (ev) {
   var edge = this.data.edge
   var node = this.data.node
   var shape = this.data.shape
 
-  if (ev.type === 'mousedown'){
+  if (ev.type === 'mousedown') {
     this.lastOffset = 0
     this.startValue = QueryParam(node, 'shape').read()
     this.start = ev
   } else if (this.start) {
-    if (edge === 'bottom'){
+    if (edge === 'bottom') {
       var offset = Math.round((ev.y - this.start.y) / 30)
-      if (this.lastOffset !== offset){
-        QueryParam(node, 'shape').set([ clamp1(this.startValue[0]+offset), this.startValue[1] ])
+      if (this.lastOffset !== offset) {
+        QueryParam(node, 'shape').set([ clamp1(this.startValue[0] + offset), this.startValue[1]])
         this.lastOffset = offset
       }
-    } else if (edge === 'right'){
+    } else if (edge === 'right') {
       var offset = Math.round((ev.x - this.start.x) / (248 / shape[1]))
-      if (this.lastOffset !== offset){
-        QueryParam(node, 'shape').set([ this.startValue[0], clamp1(this.startValue[1]+offset) ])
+      if (this.lastOffset !== offset) {
+        QueryParam(node, 'shape').set([ this.startValue[0], clamp1(this.startValue[1] + offset) ])
         this.lastOffset = offset
       }
     }
@@ -118,19 +118,18 @@ function resize(ev){
 
 }
 
-function clamp1(val){
+function clamp1 (val) {
   return Math.max(val, 1)
 }
 
-function getChunks(controller){
+function getChunks (controller) {
   var context = controller.context
   var chunkPositions = controller.chunkPositions ? controller.chunkPositions() : {}
   var chunks = []
-  for (var k in chunkPositions){
-
+  for (var k in chunkPositions) {
     var chunk = context.chunkLookup.get(k)
 
-    if (chunk){
+    if (chunk) {
       var data = chunk()
       chunks.push({
         id: data.id,
@@ -148,64 +147,63 @@ function getChunks(controller){
   return chunks
 }
 
-function enterButton(ev) {
+function enterButton (ev) {
   ev.currentTarget.classList.add('-dragOver')
 }
 
-function leaveButton(ev) {
+function leaveButton (ev) {
   ev.currentTarget.classList.remove('-dragOver')
 }
 
-function startDrag(ev){
+function startDrag (ev) {
   window.currentDrag = ev
 }
 
-function endDrag(ev){
+function endDrag (ev) {
   window.currentDrag = null
 }
 
 var cloneDrag = null
 var entering = null
-function dragLeave(ev){
+function dragLeave (ev) {
   var controller = ev.data
-  if (window.currentDrag && (!entering || entering !== controller)){
+  if (window.currentDrag && (!entering || entering !== controller)) {
     var chunkId = getId(currentDrag.data)
-    if (chunkId && !ev.altKey){
+    if (chunkId && !ev.altKey) {
       controller.chunkPositions.delete(chunkId)
     }
   }
 }
-function dragEnter(ev){
+function dragEnter (ev) {
   entering = ev.data
 
-  setTimeout(function(){
+  setTimeout(function () {
     entering = null
   }, 1)
 }
 
-function getId(chunk){
-  if (typeof chunk== 'function'){
+function getId (chunk) {
+  if (typeof chunk == 'function') {
     chunk = chunk()
   }
 
-  if (chunk){
+  if (chunk) {
     return chunk.id
   }
 }
 
-function dragOver(ev){
+function dragOver (ev) {
   var controller = ev.data
   var currentDrag = window.currentDrag
 
-  if (currentDrag){
-
+  if (currentDrag) {
     if (ev.altKey) {
       cloneDrag = currentDrag
       ev.dataTransfer.dropEffect = 'copy'
     } else {
       var chunkId = getId(currentDrag.data)
 
-      if (chunkId){
+      if (chunkId) {
         var shape = controller.playback.shape()
         var height = ev.offsetHeight / shape[0]
         var width = ev.offsetWidth / shape[1]
@@ -213,13 +211,13 @@ function dragOver(ev){
         var x = ev.offsetX - currentDrag.offsetX
         var y = ev.offsetY - currentDrag.offsetY
 
-        var r = Math.round(y/width)
-        var c = Math.round(x/width)
+        var r = Math.round(y / width)
+        var c = Math.round(x / width)
 
         var currentValue = controller.chunkPositions.get(chunkId)
 
-        if (!currentValue || currentValue[0] !== r || currentValue[1] !== c){
-          controller.chunkPositions.put(chunkId, [r,c])
+        if (!currentValue || currentValue[0] !== r || currentValue[1] !== c) {
+          controller.chunkPositions.put(chunkId, [r, c])
         }
       }
 
@@ -228,13 +226,13 @@ function dragOver(ev){
     }
 
     ev.event.preventDefault()
-  } else if (~ev.dataTransfer.types.indexOf('filepath')){
+  } else if (~ev.dataTransfer.types.indexOf('filepath')) {
     ev.dataTransfer.dropEffect = 'copy'
     ev.event.preventDefault()
   }
 }
 
-function drop(ev){
+function drop (ev) {
   var path = ev.dataTransfer.getData('filepath')
   var controller = ev.data
   var actions = controller.context.actions
@@ -244,8 +242,8 @@ function drop(ev){
   var shape = controller.playback.shape()
   var height = ev.offsetHeight / shape[0]
   var width = ev.offsetWidth / shape[1]
-  var r = Math.floor(ev.offsetY/height)
-  var c = Math.floor(ev.offsetX/width)
+  var r = Math.floor(ev.offsetY / height)
+  var c = Math.floor(ev.offsetX / width)
 
   var currentDrag = cloneDrag
   cloneDrag = null
@@ -262,15 +260,14 @@ function drop(ev){
         var chunk = setup.chunks.push(extend(data, {
           id: id
         }))
-        controller.chunkPositions.put(id, [r,c])
+        controller.chunkPositions.put(id, [r, c])
         return
       }
     }
   }
 
-  if (path && setup && setup.chunks){
-
-    actions.importChunk(path, setup.context.cwd, function(err, newPath) {
+  if (path && setup && setup.chunks) {
+    actions.importChunk(path, setup.context.cwd, function (err, newPath) {
       if (err) throw err
 
       var id = getBaseName(newPath, '.json')
@@ -283,34 +280,34 @@ function drop(ev){
         'scale': '$global'
       })
 
-      controller.chunkPositions.put(id, [r,c])
+      controller.chunkPositions.put(id, [r, c])
     })
 
   }
 }
 
-function getElementMouseOffset(offsetX, offsetY, clientX, clientY){
+function getElementMouseOffset (offsetX, offsetY, clientX, clientY) {
   return [clientX - offsetX, clientY - offsetY]
 }
 
-function getOffset(start, end, size){
+function getOffset (start, end, size) {
   var difference = (end - start) / size
   return Math.round(difference)
 }
 
-function percent(decimal){
+function percent (decimal) {
   return (decimal * 100) + '%'
 }
 
-function color(rgb, a){
-  if (!Array.isArray(rgb)){
-    rgb = [100,100,100]
+function color (rgb, a) {
+  if (!Array.isArray(rgb)) {
+    rgb = [100, 100, 100]
   }
-  return 'rgba(' + rgb[0] +','+rgb[1]+','+rgb[2]+','+a+')'
+  return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'
 }
 
-function mixColor(a, b){
-  if (!Array.isArray(a)){
+function mixColor (a, b) {
+  if (!Array.isArray(a)) {
     return b
   }
   return [
@@ -320,12 +317,12 @@ function mixColor(a, b){
   ]
 }
 
-function toggleChunk(chunk){
+function toggleChunk (chunk) {
   var minimised = chunk.minimised || QueryParam(chunk, 'minimised')
   minimised.set(!read(minimised))
 }
 
-function selectChunk(target){
+function selectChunk (target) {
   var controller = target.controller
   var setup = controller.context.setup
   var actions = controller.context.actions

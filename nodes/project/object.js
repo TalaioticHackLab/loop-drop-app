@@ -35,7 +35,6 @@ var scrollIntoView = require('scroll-into-view')
 module.exports = Project
 
 function Project (parentContext) {
-
   var context = Object.create(parentContext)
   var recorder = SessionRecorder(context)
 
@@ -96,7 +95,7 @@ function Project (parentContext) {
 
   var broadcastItemLoaded = null
   obs.items = ObservArray([])
-  obs.items.onLoad = Event(function(broadcast) {
+  obs.items.onLoad = Event(function (broadcast) {
     broadcastItemLoaded = broadcast
   })
 
@@ -120,13 +119,13 @@ function Project (parentContext) {
   var actions = obs.actions = {
     open: function (path) {
       var ext = getExt(path)
-      if (!ext){
+      if (!ext) {
         path = join(path, 'index.json')
       }
 
       var current = findItemByPath(obs.items, path)
 
-      if (!current){
+      if (!current) {
         current = actions.addFileObject(path)
       }
 
@@ -139,14 +138,14 @@ function Project (parentContext) {
 
     closeFile: function (path) {
       var object = findItemByPath(obs.items, path)
-      if (object){
+      if (object) {
         object.close()
       }
     },
 
     toggleDirectory: function (path) {
       var directory = obs.subEntries.get(path)
-      if (directory){
+      if (directory) {
         obs.subEntries.put(path, null)
         directory.close()
       } else {
@@ -184,40 +183,40 @@ function Project (parentContext) {
       var isSelected = path === obs.selected() || filePath === obs.selected()
 
       resolveAvailable(newPath, context.fs, function (err, newPath) {
-        if (err) return cb&&cb(err)
+        if (err) return cb && cb(err)
         context.fs.rename(path, newPath, function (err) {
-          if (err) return cb&&cb(err)
+          if (err) return cb && cb(err)
 
           // force reload of entries, just in case watchers are glitching
           obs.entries.refresh()
           obs.recordingEntries.refresh()
 
           var item = findItemByPath(obs.items, filePath)
-          if (item){
+          if (item) {
             item.load(newFilePath)
-            if (isSelected){
+            if (isSelected) {
               obs.selected.set(item.path)
             }
           }
-          cb&&cb()
+          cb && cb()
         })
       })
 
     },
 
     deleteEntry: function (path, cb) {
-      rimraf(path, context.fs, cb || function(err) {
-        if (err) throw err
-      })
+      rimraf(path, context.fs, cb || function (err) {
+          if (err) throw err
+        })
     },
 
     importChunk: function (path, cwd, cb) {
       var baseName = getBaseName(path)
       var targetPath = join(cwd, baseName)
 
-      resolveAvailable(targetPath, context.fs, function(err, toPath) {
+      resolveAvailable(targetPath, context.fs, function (err, toPath) {
         copyExternalFilesTo(context.fs, path, cwd)
-        copyFile(path, toPath, context.fs, function(err){
+        copyFile(path, toPath, context.fs, function (err) {
           if (cb) {
             if (err) return cb(err)
             cb(null, toPath)
@@ -234,13 +233,12 @@ function Project (parentContext) {
       setup.updateChunkReferences(chunkId, newChunkId)
 
       if (chunk._type === 'ExternalNode' && descriptor.src) {
-
         // only rename if old file matches ID
         var oldSrc = chunkId + '.json'
         var newSrc = newChunkId + '.json'
         if (oldSrc === join(descriptor.src)) {
           var path = fileObject.resolvePath(oldSrc)
-          actions.rename(path, newChunkId + '.json', function(){
+          actions.rename(path, newChunkId + '.json', function () {
             QueryParam(chunk, 'src').set(newSrc)
           })
         }
@@ -248,16 +246,16 @@ function Project (parentContext) {
       }
     },
 
-    scrollToSelected: function(){
-      setTimeout(function(){
+    scrollToSelected: function () {
+      setTimeout(function () {
         var el = document.querySelector('.SetupsBrowser .-selected, .ChunksBrowser .-selected')
         el && el.scrollIntoViewIfNeeded()
       }, 10)
     },
 
-    scrollToSelectedChunk: function() {
+    scrollToSelectedChunk: function () {
       clearTimeout(chunkScroller)
-      chunkScroller = setTimeout(function(){
+      chunkScroller = setTimeout(function () {
         var el = document.querySelector('.ExternalNode.-selected')
         if (el) {
           scrollIntoView(el, { time: 200 })
@@ -265,28 +263,26 @@ function Project (parentContext) {
       }, 200)
     },
 
-    grabInputForSelected: function(){
+    grabInputForSelected: function () {
       var item = lastSelected
-      if (item && item.node && item.node.grabInput){
+      if (item && item.node && item.node.grabInput) {
         item.node.grabInput()
       }
     },
 
     addFileObject: function (path) {
-
       var object = FileObject(context)
 
       // HACK: avoid audio glitches by scheduling 1 second ahead
       scheduler.schedule(1)
 
       object.onLoad(function () {
-
         broadcastItemLoaded(object)
 
         // don't backup a corrupted file!
-        //if (Object.keys(object() || {}).length){
+        // if (Object.keys(object() || {}).length){
         //  project.backup(object.file)
-        //}
+        // }
 
         if (!~obs.items.indexOf(object)) {
           obs.items.push(object)
@@ -318,7 +314,7 @@ function Project (parentContext) {
   var lastSelected = null
   obs.entries(actions.scrollToSelected)
   obs.selected(function (path) {
-    if (path){
+    if (path) {
       lastSelected = findItemByPath(obs.items, path)
       actions.scrollToSelected()
       process.nextTick(actions.grabInputForSelected)
@@ -336,15 +332,15 @@ function Project (parentContext) {
 
 function copyExternalFilesTo (fs, path, target) {
   var fromRoot = getDirectory(path)
-  fs.readFile(path, 'utf8', function(err, data) {
+  fs.readFile(path, 'utf8', function (err, data) {
     if (!err) {
-      JSON.stringify(JSON.parse(data), function(key, value) {
+      JSON.stringify(JSON.parse(data), function (key, value) {
         if (value && value.node === 'AudioBuffer') {
           var from = resolve(fromRoot, value.src)
           var to = resolve(target, value.src)
-          fs.exists(from, function(exists) {
+          fs.exists(from, function (exists) {
             if (exists) {
-              fs.exists(to, function(exists) {
+              fs.exists(to, function (exists) {
                 if (!exists) {
                   fs.createReadStream(from).pipe(fs.createWriteStream(to))
                 }

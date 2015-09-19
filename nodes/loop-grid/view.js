@@ -9,15 +9,15 @@ var QueryParam = require('lib/query-param')
 var renderGrid = require('./grid.js')
 
 var controllerOptions = [
-  ['Qwerty Keyboard', 'controller/qwerty'], 
+  ['Qwerty Keyboard', 'controller/qwerty'],
   ['Novation Launchpad', 'controller/launchpad']
 ]
 
-module.exports = function(node){
-  if (node){
+module.exports = function (node) {
+  if (node) {
     var context = node.context
     var collection = context.collection
-    
+
     var state = {node: node}
     var nameSuffix = node().port ? ' (' + node().port + ')' : ''
     return h('div ControllerNode', {
@@ -40,11 +40,11 @@ module.exports = function(node){
   }
 }
 
-function invoke(func){
+function invoke (func) {
   return func()
 }
 
-function renderParams(controller){
+function renderParams (controller) {
   var params = [
     Select(QueryParam(controller, 'node'), {
       options: controllerOptions,
@@ -53,13 +53,13 @@ function renderParams(controller){
     })
   ]
 
-  if (controller.port && controller.portChoices){
+  if (controller.port && controller.portChoices) {
     params.push(
       Select(controller.port, {
         options: controller.portChoices,
         flex: true,
         missingPrefix: ' (disconnected)',
-        includeBlank: "No Midi Device"
+        includeBlank: 'No Midi Device'
       })
     )
   }
@@ -67,11 +67,11 @@ function renderParams(controller){
   return h('ParamList', params)
 }
 
-function renderLoopPosition(data){
+function renderLoopPosition (data) {
   var positionElements = []
 
-  if (Array.isArray(data)){
-    for (var i=0;i<data[1];i++){
+  if (Array.isArray(data)) {
+    for (var i = 0;i < data[1];i++) {
       var active = Math.floor(data[0]) == i
       positionElements.push(h('div', {className: active ? '-active' : ''}))
     }

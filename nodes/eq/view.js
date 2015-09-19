@@ -3,7 +3,7 @@ var Header = require('lib/widgets/header')
 var ModRange = require('lib/params/mod-range')
 var Select = require('lib/params/select')
 
-module.exports = function renderFilter(node) {
+module.exports = function renderFilter (node) {
   return h('ProcessorNode -filter', [
     Header(node, h('span', 'EQ')),
     h('section', [

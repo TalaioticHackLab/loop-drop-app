@@ -17,5 +17,5 @@ fs.readdirSync(__dirname).forEach(function (entry) {
       self.groupLookup[item.group] = self.groupLookup[item.group] || []
       self.groupLookup[item.group].push(item)
     }
-  } 
+  }
 })

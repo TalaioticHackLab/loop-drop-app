@@ -19,8 +19,8 @@ module.exports = function renderOscillator (node) {
 
     h('ParamList', [
 
-      Select(node.shape, { 
-        options: shapeChoices 
+      Select(node.shape, {
+        options: shapeChoices
       }),
 
       ModRange(node.amp, {

@@ -8,21 +8,20 @@ var extend = require('xtend/immutable')
 
 module.exports = SlotChooser
 
-function SlotChooser(chunk, spawnSlot){
-
+function SlotChooser (chunk, spawnSlot) {
   var triggers = []
-  var shape = chunk.shape() || [1,1]
+  var shape = chunk.shape() || [1, 1]
   var selectedSlotId = chunk.selectedSlotId()
   var slots = chunk.context.slotLookup
   var length = shape[0] * shape[1]
 
-  for (var i=0;i<length;i++){
+  for (var i = 0;i < length;i++) {
     var id = String(i)
     var slot = slots.get(id)
     var width = (100 / shape[1]) + '%'
     var dragInfo = { collection: chunk.slots, id: id, select: chunk.selectedSlotId.set }
 
-    if (slot){
+    if (slot) {
       triggers.push(
         h('div.slot', {
           'draggable': true,
@@ -56,12 +55,12 @@ function SlotChooser(chunk, spawnSlot){
         }, '+ trigger')
       )
     }
-    
+
 
   }
 
   return h('SlotChooser', [
-    triggers, 
+    triggers,
     h('div.spacer'),
     h('div.slot -output', {
       'className': selectedSlotId === 'output' ? '-selected' : '',
@@ -72,15 +71,15 @@ function SlotChooser(chunk, spawnSlot){
 
 var currentDrag = null
 
-function dragStart(ev){
+function dragStart (ev) {
   currentDrag = ev.data
 }
 
-function dragEnd(ev){
+function dragEnd (ev) {
   currentDrag = null
 }
 
-function dragOver(ev){
+function dragOver (ev) {
   ev.currentTarget.classList.add('-dragOver')
   if (ev.altKey || containsFiles(ev.dataTransfer)) {
     ev.dataTransfer.dropEffect = 'copy'
@@ -90,7 +89,7 @@ function dragOver(ev){
   ev.event.preventDefault()
 }
 
-function drop(ev){
+function drop (ev) {
   dragLeave(ev)
   ev.event.preventDefault()
 
@@ -100,7 +99,7 @@ function drop(ev){
 
   if (containsFiles(ev.dataTransfer)) {
     var file = ev.dataTransfer.items[0].getAsFile()
-    if (target){
+    if (target) {
       targetCollection.remove(target)
     }
 
@@ -113,7 +112,7 @@ function drop(ev){
       ]
     })
 
-    importSample(targetCollection.context, file, function(err, descriptor){
+    importSample(targetCollection.context, file, function (err, descriptor) {
       var player = node.sources.get(0)
       player.set(extend(player(), descriptor))
       ev.data.select(ev.data.id)
@@ -125,24 +124,22 @@ function drop(ev){
     var source = sourceLookup.get(currentDrag.id)
     var isCopying = ev.altKey
 
-    if (source && source !== target){
-
-      if (target){
+    if (source && source !== target) {
+      if (target) {
         // clear out existing
         targetCollection.remove(target)
       }
 
-      if (sourceCollection !== targetCollection || isCopying){
-
+      if (sourceCollection !== targetCollection || isCopying) {
         // move to different collection
         var descriptor = obtainWithId(ev.data.id, source())
 
-        if (!isCopying){
+        if (!isCopying) {
           sourceCollection.remove(source)
         }
 
         targetCollection.push(descriptor)
-      
+
       } else {
         source.id.set(ev.data.id)
       }
@@ -152,20 +149,20 @@ function drop(ev){
   }
 }
 
-function dragLeave(ev){
+function dragLeave (ev) {
   ev.currentTarget.classList.remove('-dragOver')
 }
 
-function obtainWithId(id, obj){
+function obtainWithId (id, obj) {
   obj = JSON.parse(JSON.stringify(obj))
   obj.id = id
   return obj
 }
 
-function containsFiles(transfer) {
+function containsFiles (transfer) {
   if (transfer.types) {
     for (var i = 0; i < event.dataTransfer.types.length; i++) {
-      if (event.dataTransfer.types[i] == "Files") {
+      if (event.dataTransfer.types[i] == 'Files') {
         return true
       }
     }

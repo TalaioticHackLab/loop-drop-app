@@ -17,8 +17,7 @@ var controllerSpawners = [
 
 module.exports = renderSetup
 
-function renderSetup(setup){
-
+function renderSetup (setup) {
   var chunkSpawners = [].concat(
     setup.context.nodeInfo.groupLookup.chunks,
     setup.context.nodeInfo.groupLookup.modifierChunks
@@ -54,7 +53,7 @@ function renderSetup(setup){
   ])
 }
 
-function renderMasterVolume(volume){
+function renderMasterVolume (volume) {
   return h('section.volume', [
 
     h('h1', 'Master Volume'),
@@ -68,7 +67,7 @@ function renderMasterVolume(volume){
   ])
 }
 
-function renderScaleChooser(scale){
+function renderScaleChooser (scale) {
   return h('section.scale', [
     h('h1', 'Global Scale'),
     h('div.chooser', [

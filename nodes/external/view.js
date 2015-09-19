@@ -15,7 +15,7 @@ module.exports = function renderExternal (node) {
   var collection = node.context.collection
 
   return h('div ExternalNode', [
-    h('header',[
+    h('header', [
       h('span', data.id + ' (external)'),
       h('button.remove Button -warn', {
         'ev-click': send(collection.remove, node),

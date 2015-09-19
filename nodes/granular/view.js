@@ -28,7 +28,7 @@ module.exports = function renderGranular (node) {
 
       SampleChooser(node),
 
-      Select(node.mode, { 
+      Select(node.mode, {
         options: modeChoices,
         defaultValue: 'loop'
       }),
@@ -141,9 +141,9 @@ module.exports = function renderGranular (node) {
   ])
 }
 
-function getSampleName(data){
+function getSampleName (data) {
   var src = data && data.src
-  if (typeof src === 'string'){
+  if (typeof src === 'string') {
     return src.replace(/^\.\//, '')
   }
 }

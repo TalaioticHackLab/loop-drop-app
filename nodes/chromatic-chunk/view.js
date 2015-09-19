@@ -14,10 +14,10 @@ var renderNode = require('lib/render-node')
 
 module.exports = renderChromaticChunk
 
-function renderChromaticChunk(chunk){
+function renderChromaticChunk (chunk) {
   return h('ChunkNode', [
     h('div.options', [
-      
+
       h('h1', 'Slots'),
       TemplateSlotChooser(chunk),
 
@@ -44,38 +44,36 @@ function renderChromaticChunk(chunk){
   ])
 }
 
-function renderScaleChooser(node){
+function renderScaleChooser (node) {
   return h('ParamList -compact', [
     ScaleChooser(QueryParam(node.scale, 'notes', {})),
     Range(QueryParam(node.scale, 'offset', {}), {
-      title: 'offset', 
-      format: 'semitone', 
-      defaultValue: 0, 
-      width: 200, 
+      title: 'offset',
+      format: 'semitone',
+      defaultValue: 0,
+      width: 200,
       flex: true
     })
   ])
 }
 
-
-function currentSlotEditor(chunk){
+function currentSlotEditor (chunk) {
   var slotId = chunk.selectedSlotId()
-  if (slotId === '$template'){
+  if (slotId === '$template') {
     return renderNode(chunk.templateSlot.node)
   } else {
     var slots = chunk.context.slotLookup
     var slot = slots.get(slotId)
-    if (slot){
+    if (slot) {
       return renderNode(slot)
     }
   }
 }
 
-function TemplateSlotChooser(chunk){
-
+function TemplateSlotChooser (chunk) {
   var triggers = []
 
-  var shape = chunk.shape() || [1,1]
+  var shape = chunk.shape() || [1, 1]
   var selectedSlotId = chunk.selectedSlotId()
   var slots = chunk.context.slotLookup
 
@@ -87,7 +85,7 @@ function TemplateSlotChooser(chunk){
   )
 
   return h('SlotChooser', [
-    triggers, 
+    triggers,
     h('div.spacer'),
     h('div.slot -output', {
       'className': selectedSlotId === 'output' ? '-selected' : '',
@@ -98,17 +96,17 @@ function TemplateSlotChooser(chunk){
 
 function selectTemplateSlot (chunk) {
   var data = chunk.templateSlot()
-  if (!data || !data.node){
+  if (!data || !data.node) {
     chunk.templateSlot.set({
       id: { $param: 'id' },
       noteOffset: {
-        node: 'modulator/scale', 
-        value: { $param: 'value'}, 
-        offset: { $param: 'offset' },  
+        node: 'modulator/scale',
+        value: { $param: 'value'},
+        offset: { $param: 'offset' },
         scale: { $param: 'scale' }
       },
-      node: 'slot', 
-      output: 'output' 
+      node: 'slot',
+      output: 'output'
     })
   }
   chunk.selectedSlotId.set('$template')

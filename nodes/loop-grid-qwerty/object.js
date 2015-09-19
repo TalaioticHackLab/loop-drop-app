@@ -26,17 +26,16 @@ var DittyGridStream = require('lib/ditty-grid-stream')
 var convertKeyCode = require('keycode')
 
 var InputStack = require('./input-stack.js')
-var repeatStates = [2, 1, 2/3, 1/2, 1/3, 1/4, 1/6, 1/8, 3/4, 0]
+var repeatStates = [2, 1, 2 / 3, 1 / 2, 1 / 3, 1 / 4, 1 / 6, 1 / 8, 3 / 4, 0]
 
 module.exports = LoopQwerty
 
 var versionKey = 2
-var cacheKey = "__QWERTY_KEY_INPUT_CACHE@" + versionKey
+var cacheKey = '__QWERTY_KEY_INPUT_CACHE@' + versionKey
 var getInput = document[cacheKey] = document[cacheKey] || InputStack()
 var repeatLength = Observ(2)
 
 function LoopQwerty (context) {
-  
   var loopGrid = LoopGrid(context)
   var looper = Looper(loopGrid)
 
@@ -64,7 +63,7 @@ function LoopQwerty (context) {
   var flags = computeFlags(context.chunkLookup, obs.chunkPositions, loopGrid.shape)
 
   watch( // compute targets from chunks
-    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape), 
+    computeTargets(context.chunkLookup, obs.chunkPositions, loopGrid.shape),
     loopGrid.targets.set
   )
 
@@ -74,13 +73,13 @@ function LoopQwerty (context) {
   var inputGrabber = ObservGridGrabber(controllerGrid)
 
   // grab the midi for the current port
-  obs.grabInput = function(){
+  obs.grabInput = function () {
     keysDown.grab()
   }
 
   obs.activeInput = keysDown.active
 
-  //HACK: all inputs share repeatLength
+  // HACK: all inputs share repeatLength
   obs.repeatLength = repeatLength
 
   var inputGrid = Observ()
@@ -111,17 +110,16 @@ function LoopQwerty (context) {
   })
 
   watchStruct(buttons, {
-
-    store: function(value){
-      if (value){
+    store: function (value) {
+      if (value) {
         looper.store()
       }
     },
-  
-    flatten: function(value){
-      if (value){
+
+    flatten: function (value) {
+      if (value) {
         var active = activeIndexes()
-        if (looper.isTransforming()){
+        if (looper.isTransforming()) {
           looper.flatten()
         } else if (active.length) {
           looper.transform(holdActive, active)
@@ -133,38 +131,38 @@ function LoopQwerty (context) {
         }
       }
     },
-  
-    undo: function(value){
-      if (value){
+
+    undo: function (value) {
+      if (value) {
         looper.undo()
       }
     },
-  
-    redo: function(value){
-      if (value){
+
+    redo: function (value) {
+      if (value) {
         looper.redo()
       }
     },
-  
-    hold: function(value){
-      if (value){
+
+    hold: function (value) {
+      if (value) {
         transforms.holder.start(context.scheduler.getCurrentPosition())
       } else {
         transforms.holder.stop()
       }
     },
 
-    halve: function(value){
-      if (value){
+    halve: function (value) {
+      if (value) {
         var current = obs.loopLength() || 1
-        obs.loopLength.set(current/2)
+        obs.loopLength.set(current / 2)
       }
     },
 
-    double: function(value){
-      if (value){
+    double: function (value) {
+      if (value) {
         var current = obs.loopLength() || 1
-        obs.loopLength.set(current*2)
+        obs.loopLength.set(current * 2)
       }
     }
 
@@ -178,9 +176,9 @@ function LoopQwerty (context) {
   // repeater
   var releaseRepeatLight = null
   setMappedValue(repeatStates, repeatButtons, obs.repeatLength)
-  watch(obs.repeatLength, function(value){
+  watch(obs.repeatLength, function (value) {
     transforms.holder.setLength(value)
-    if (value < 2){
+    if (value < 2) {
       transforms.repeater.start(grabInputExcludeNoRepeat, value)
     } else {
       transforms.repeater.stop()
@@ -189,7 +187,7 @@ function LoopQwerty (context) {
 
   // cleanup / disconnect from keyboard on destroy
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     keysDown.close()
     loopGrid.destroy()
   }
@@ -197,12 +195,12 @@ function LoopQwerty (context) {
   return obs
 }
 
-function KeyboardGrid(obs, mapping){
+function KeyboardGrid (obs, mapping) {
   var result = ObservGrid([], mapping.shape)
 
-  watch(obs, function(value){
+  watch(obs, function (value) {
     var codes = resolve(mapping).data
-    var r = value.reduce(function(res, code){
+    var r = value.reduce(function (res, code) {
       var index = codes.indexOf(code)
       if (~index) res[index] = true
       return res
@@ -213,11 +211,11 @@ function KeyboardGrid(obs, mapping){
   return result
 }
 
-function getGridMapping(){
-  var result = "qwertyuiopasdfghjkl;zxcvbnm,./".split('').map(convertKeyCode)
+function getGridMapping () {
+  var result = 'qwertyuiopasdfghjkl;zxcvbnm,./'.split('').map(convertKeyCode)
   return ArrayGrid(result, [3, 10])
 }
 
-function resolve(val){
+function resolve (val) {
   return typeof val === 'function' ? val() : val
 }

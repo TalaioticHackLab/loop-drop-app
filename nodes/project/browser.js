@@ -12,23 +12,22 @@ var currentRename = null
 
 module.exports = renderBrowser
 
-function renderBrowser(entries, project){
-
+function renderBrowser (entries, project) {
   var elements = []
 
   // render two-level tree
-  if (entries()){
-    entries().forEach(function(entry){
+  if (entries()) {
+    entries().forEach(function (entry) {
       var base = getBaseName(entry.path)
 
       if (entry.type === 'directory' && base !== '~recordings') {
         elements.push(renderEntry(entry, project))
         var sub = project.subEntries.get(entry.path)
-        if (sub && sub()){
-          sub().forEach(function(subEntry){
+        if (sub && sub()) {
+          sub().forEach(function (subEntry) {
             var fileName = getBaseName(subEntry.path)
             var ext = getExt(fileName)
-            if (subEntry.type === 'file' && fileName !== 'index.json' && ext === '.json'){
+            if (subEntry.type === 'file' && fileName !== 'index.json' && ext === '.json') {
               elements.push(renderEntry(subEntry, project))
             }
           })
@@ -40,21 +39,20 @@ function renderBrowser(entries, project){
   return h('ScrollBox', elements)
 }
 
-function renderEntry(entry, project){
-
+function renderEntry (entry, project) {
   var actions = project.actions
   var selected = project.selected() == entry.path
-    
+
   var classList = []
   var expander = ''
 
-  if (entry.type === 'directory'){
+  if (entry.type === 'directory') {
     classList.push('-directory')
     expander = h('button.twirl', {
       'ev-click': send(actions.toggleDirectory, entry.path)
     })
 
-    if (project.subEntries.get(entry.path)){
+    if (project.subEntries.get(entry.path)) {
       classList.push('-open')
     }
 
@@ -69,10 +67,10 @@ function renderEntry(entry, project){
   var click = selected ?
     send(project.renaming.set, true) : null
 
-  if (selected){
+  if (selected) {
     classList.push('-selected')
   }
-  if (renaming){
+  if (renaming) {
     classList.push('-renaming')
     currentRename = renameWidget(entry.fileName, saveRename, cancelRename, renameState)
   }
@@ -83,7 +81,7 @@ function renderEntry(entry, project){
     }, 'delete')
   ]
 
-  if (renaming){
+  if (renaming) {
     buttons.push(
       h('button.save', {
         'ev-click': send(saveRename, renameState)
@@ -94,10 +92,10 @@ function renderEntry(entry, project){
     )
   }
 
-  var nameElement = renaming ? 
+  var nameElement = renaming ?
     currentRename : h('span', getBaseName(entry.fileName, '.json'))
 
-  return h('BrowserFile', { 
+  return h('BrowserFile', {
     'data-entry': entry,
     'draggable': true,
     'ev-dragstart': DragEvent(dragStart, entry),
@@ -107,32 +105,32 @@ function renderEntry(entry, project){
   }, [expander, nameElement, buttons ])
 }
 
-function dragStart(ev){
+function dragStart (ev) {
   window.currentDrag = null
   ev.dataTransfer.setData('filepath', ev.data.path)
 }
 
-function saveRename(){
+function saveRename () {
   var project = this.data.project
   var entry = this.data.entry
   var actions = project.actions
-  
-  if (currentRename){
+
+  if (currentRename) {
     actions.rename(entry.path, currentRename.getValue())
   }
 
   project.renaming.set(false)
 }
 
-function cancelRename(){
+function cancelRename () {
   var project = this.data.project
   project.renaming.set(false)
 }
 
-function getItemByPath(items, path){
+function getItemByPath (items, path) {
   var result = null
-  items.some(function(item){
-    if (item.path === path){
+  items.some(function (item) {
+    if (item.path === path) {
       result = item
       return true
     }

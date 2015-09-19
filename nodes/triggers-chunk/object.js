@@ -33,7 +33,7 @@ function TriggersChunk (parentContext) {
   obs.output = context.output
   slots.onUpdate(obs.routes.reconnect)
 
-  obs.destroy = function(){
+  obs.destroy = function () {
     obs.routes.destroy()
   }
 

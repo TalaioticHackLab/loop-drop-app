@@ -109,7 +109,7 @@ module.exports = function renderSlicerChunk (node) {
   })
 }
 
-function filterParams(node) {
+function filterParams (node) {
   return h('ParamList', [
     Select(node.type, {
       defaultValue: 'lowpass',
@@ -132,7 +132,7 @@ function filterParams(node) {
   ])
 }
 
-function oscillatorParams(node) {
+function oscillatorParams (node) {
   return h('ParamList', [
 
     Select(node.shape, {

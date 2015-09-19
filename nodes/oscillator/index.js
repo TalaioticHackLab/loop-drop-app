@@ -3,10 +3,10 @@ module.exports = {
   node: 'source/oscillator',
   group: 'sources',
   spawn: {
-    amp: { 
-      node: 'modulator/adsr', 
-      value: 0.6, 
-      release: 0.01 
+    amp: {
+      node: 'modulator/adsr',
+      value: 0.6,
+      release: 0.01
     }
   },
   object: require('audio-slot/sources/oscillator'),
